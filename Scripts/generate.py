@@ -1,61 +1,82 @@
-import google.generativeai as genai
-import json
-import os
-import requests
+import random
+from datetime import datetime, timedelta
 import pandas as pd
-
 
 class Generator:
 
-    def __init__(self, api_key=None, model=None):
+    def __init__(self, parameters=None, patterns=None, model=None, csv_file="data/dummy-emails - Sheet1.csv"):
+        # Default parameters for the receiver
+        self.parameters = parameters or {
+            "name": "John",
+            "surname": "Doe",
+            "email": "john.doe@example.com",
+            "business_unit": "Business Solutions",
+            "team_name": "Operations Team"
+        }
 
-        self.api_key = api_key
+        # Default phishing patterns
+        self.patterns = patterns or [
+            {"Reason": "Account Suspicious Activity", "Fake Link": "https://datalog.com/secure-login"},
+            {"Reason": "Password Expiry Notification", "Fake Link": "https://thevault.com/reset-password"},
+            {"Reason": "Exclusive Training Webinar", "Fake Link": "https://webinary.com/join-webinar"},
+            {"Reason": "Email Storage Full", "Fake Link": "https://storee.com/manage-storage"}
+        ]
 
-        if api_key == None:
-            self.get_api_key()
+        # Load the CSV data for sender names
+        self.csv_data = pd.read_csv(csv_file)
+        self.prompt = None
+        self.model = model
 
-    def get_api_key(self):
-        
-        config_file = "data/config.json"
+    def random_date_and_time(self):
 
-        if os.path.exists(config_file):
-            with open(config_file, "r") as file:
-                config = json.load(file)
-                self.api_key = config.get("GEMINI_API_KEY")
-            print("Configuration loaded successfully.")
-        else:
-            raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+        """Generates a random future date and time."""
+        future_date = datetime.now() + timedelta(days=random.randint(1, 30))
+        random_time = f"{random.randint(8, 17)}:{random.choice(['00', '15', '30', '45'])} ET"
+        return future_date.strftime("%A, %B %d, %Y"), random_time
 
-    def connect(self):
+    def random_topic(self):
 
-        genai.configure(api_key=self.api_key)
+        """Generates a random webinar topic."""
+        topics = ["AI Trends in 2025", "Machine Learning Best Practices", "Optimizing Your AI Workflows"]
+        return random.choice(topics)
 
-    def initialize_model(self):
+    def random_sender(self):
 
-        self.model = genai.GenerativeModel('gemini-pro')
-    
-    def generate_text(self, prompt=None):
+        """Selects a random sender's first and last name from the CSV dataset, ensuring they are not the same as the receiver."""
+        while True:
+            sender_row = self.csv_data.sample(1).iloc[0]
+            sender_first_name = sender_row["First Name"]
+            sender_last_name = sender_row["Last Name"]
+            
+            # Check if the sender is the same as the receiver
+            if sender_first_name != self.parameters["name"] and sender_last_name != self.parameters["surname"]:
+                return sender_first_name, sender_last_name
 
-        self.prompt = prompt
+    def define_prompt(self):
+
+        # Randomly pick a pattern
+        random_pick = random.choice(self.patterns)
+        random_date, random_time = self.random_date_and_time()
+        random_topic = self.random_topic()
+        sender_first_name, sender_last_name = self.random_sender()
+
+        # Replace placeholders with dynamic values
+        self.prompt = (
+            f"Write an email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
+            f"from the {self.parameters['team_name']} team on the following theme: {random_pick['Reason']}.\n\n"
+            f"They should click on this link: {random_pick['Fake Link']}.\n\n"
+            f"Include a recommendation of webinar about topic : {random_pick['Reason']} and schedule it for {random_date} at {random_time} and use this link : https://webinary.com/join-webinar and precise the webinar is additional for training."
+            f"Only write the body of this email."
+        )
+        return self.prompt
+
+    def generate_text(self):
+
+        if not self.model:
+            raise ValueError("Model is not initialized. Call 'Configurator.initialize_model()' first.")
+
+        if not self.prompt:
+            raise ValueError("Prompt is not defined. Call 'define_prompt()' first.")
+
         response = self.model.generate_content(self.prompt)
-
-        if prompt != None:
-            print("Prompt: ",self.prompt)
-            print("Output: ")
-            print(response.text)
-        else:
-            print("Please provide a prompt to generate text.")
-    
-    def fetch_data(self):
-
-        url = "http://your-fastapi-endpoint/data"
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            data = response.json()
-            df = pd.DataFrame(data)
-            df.to_csv("data/fetched_data.csv", index=False)
-            print("Data fetched and saved successfully.")
-        else:
-            print(f"Failed to fetch data. Status code: {response.status_code}")
-
+        return response.text
