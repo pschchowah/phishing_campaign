@@ -1,0 +1,5 @@
+# Ignore configuration files with sensitive data
+config.json
+token.json
+credentials.json
+__pycache__/
