@@ -41,9 +41,11 @@ def main():
         subject = generator.generate_text("Write me the subject of this email:\n" + body)
         
         # Send Email
-        service = email.authenticate()
+        email.authenticate()
+
         sender = "me"
         recipient = row["Email"]
+        
         message = email.create_message(sender, recipient, subject, body)
         email.send_message(message)
 
