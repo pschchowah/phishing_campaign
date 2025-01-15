@@ -1,9 +1,12 @@
 from Scripts.config import Configurator
 from Scripts.generate import Generator
+from Scripts.email import Emailer
 import pandas as pd
 
 def main():
+    
     # Initialize the Configurator
+
     config = Configurator()
     config.connect()
     config.initialize_model()
@@ -13,6 +16,9 @@ def main():
 
     # Initialize the Generator
     generator = Generator(model=config.model)
+
+    # Initialize the Email
+    email = Emailer()
 
     # Generate prompts and outputs for each user in the dataset
     for _, row in df.iterrows():
@@ -34,9 +40,12 @@ def main():
         body = generator.generate_text(body_prompt)
         subject = generator.generate_text("Write me the subject of this email:\n" + body)
         
-        # Print the generated email
-        print(subject)
-        print(f"\nEmail for {receiver_name} {receiver_surname}:\n{body}\n")
+        # Send Email
+        service = email.authenticate()
+        sender = "me"
+        recipient = row["Email"]
+        message = email.create_message(sender, recipient, subject, body)
+        email.send_message(message)
 
 if __name__ == "__main__":
     main()
