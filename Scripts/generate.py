@@ -16,10 +16,14 @@ class Generator:
 
         # Default phishing patterns
         self.patterns = patterns or [
-            {"Reason": "Account Suspicious Activity", "Fake Link": "https://datalog.com/secure-login"},
-            {"Reason": "Password Expiry Notification", "Fake Link": "https://thevault.com/reset-password"},
-            {"Reason": "Exclusive Training Webinar", "Fake Link": "https://webinary.com/join-webinar"},
-            {"Reason": "Email Storage Full", "Fake Link": "https://storee.com/manage-storage"}
+            {"Reason": "Unusual Login Activity Detected", "Fake Link": "https://login.proximus-secure.com"},
+            {"Reason": "Service Upgrade Notification", "Fake Link": "https://update.proximus.com/upgrade"},
+            {"Reason": "Salary Adjustment Notice", "Fake Link": "https://salary.proximus.com"},
+            {"Reason": "New Security Features Available", "Fake Link": "https://security.proximus.com"},
+            {"Reason": "Mandatory Account Verification", "Fake Link": "https://verify.proximus-account.com"},
+            {"Reason": "Upcoming Maintenance Notice", "Fake Link": "https://maintenance.proximus.com"},
+            {"Reason": "Your Account Storage Limit Reached", "Fake Link": "https://storage.proximus.com/manage"},
+            {"Reason": "Exclusive Webinar on Proximus AI Solutions", "Fake Link": "https://webinars.proximus.com/join"}
         ]
 
         # Load the CSV data for sender names
@@ -62,12 +66,23 @@ class Generator:
 
         # Replace placeholders with dynamic values
         self.prompt = (
-            f"Write an email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
-            f"from the {self.parameters['team_name']} team on the following theme: {random_pick['Reason']}.\n\n"
-            f"They should click on this link: {random_pick['Fake Link']}.\n\n"
-            f"Include a recommendation of webinar about topic : {random_pick['Reason']} and schedule it for {random_date} at {random_time} and use this link : https://webinary.com/join-webinar and precise the webinar is additional for training."
-            f"Only write the body of this email."
-        )
+            f"Compose a professional email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
+            f"from the {self.parameters['team_name']} team. The email should address the following topic: {random_pick['Reason']}."
+            f"The email should include the following elements:"
+            f"1. A clear explanation of why {random_pick['Reason']} is important."
+            f"2. A specific call to action requiring the recipient to click this link: {random_pick['Fake Link']}."
+            f"3. A recommendation for a related webinar that will help address this topic, scheduled for {random_date} at {random_time}."
+            f"Do not include the timezone in the email, but ensure it is in Central European Time (CET)."
+            f"The webinar link should be: https://webinary.com/join-webinar, and emphasize that this training is additional and beneficial."
+            f"4. Ensure the tone is professional, urgent if necessary, but not overly alarming to avoid suspicion."
+
+            f"Remember to:"
+            f"- Use realistic and natural-sounding language throughout."
+            f"- Make the email appear tailored specifically for the recipient ({self.parameters['name']} {self.parameters['surname']})."
+
+            f"Only write the body of the email. Do not include headers or signatures."
+    )
+            
         return self.prompt
 
     def generate_text(self, prompt):
