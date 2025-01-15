@@ -52,7 +52,7 @@ class Generator:
             if sender_first_name != self.parameters["name"] and sender_last_name != self.parameters["surname"]:
                 return sender_first_name, sender_last_name
 
-    def define_prompt(self):
+    def define_body_prompt(self):
 
         # Randomly pick a pattern
         random_pick = random.choice(self.patterns)
@@ -70,8 +70,9 @@ class Generator:
         )
         return self.prompt
 
-    def generate_text(self):
+    def generate_text(self, prompt):
 
+        self.prompt = prompt
         if not self.model:
             raise ValueError("Model is not initialized. Call 'Configurator.initialize_model()' first.")
 

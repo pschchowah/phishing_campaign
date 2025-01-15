@@ -29,11 +29,14 @@ def main():
         }
         
         # Define the prompt and generate email text
-        prompt = generator.define_prompt()
-        response = generator.generate_text()
+
+        body_prompt = generator.define_body_prompt()
+        body = generator.generate_text(body_prompt)
+        subject = generator.generate_text("Write me the subject of this email:\n" + body)
         
         # Print the generated email
-        print(f"\nEmail for {receiver_name} {receiver_surname}:\n{response}\n")
+        print(subject)
+        print(f"\nEmail for {receiver_name} {receiver_surname}:\n{body}\n")
 
 if __name__ == "__main__":
     main()
