@@ -86,8 +86,8 @@ class Generator:
             f"3. Keep the tone professional and urgent but not alarming.\n"
             f"Ensure the language sounds natural and is tailored for the recipient."
             f"Format the result as an HTML body text with only <p> tags to subdivise in paragraphs."
-
-        )
+            f"Never add links directly, it will be implemented with static html afterwards.\n"
+            )
 
         return self.prompt
 
