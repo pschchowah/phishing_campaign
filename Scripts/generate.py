@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 class Generator:
-
     def __init__(self, model=None, csv_file="data/dummy-emails - Sheet1.csv", base_url="https://email-tracker-webservice.onrender.com"):
         # Default parameters for the receiver
         self.parameters = {
@@ -61,15 +60,15 @@ class Generator:
 
         # Define the email content with placeholders replaced
         self.prompt = (
-            f"Compose a professional email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
+            f"Compose a professional email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']}"
             f"from the {self.parameters['team_name']} team. The email should address the following topic: {random_pick['Reason']}. "
             f"The email should include the following elements:\n"
             f"1. A clear explanation of why {random_pick['Reason']} is important.\n"
-            f"2. A call to action to click this link: {random_pick['Fake Link']}.\n"
-            f"3. A recommendation for a related webinar scheduled for {random_date} at {random_time}, without time zone info.\n"
-            f"4. Include a link for the webinar: https://webinary.com/join-webinar.\n"
-            f"5. Keep the tone professional and urgent but not alarming.\n"
+            f"2. A recommendation for a related webinar scheduled for {random_date} at {random_time}, GMT+1.\n"
+            f"3. Keep the tone professional and urgent but not alarming.\n"
             f"Ensure the language sounds natural and is tailored for the recipient."
+            f"Format the result as an HTML body text with only <p> tags to subdivise in paragraphs."            
+    
         )
         
         return self.prompt
@@ -78,28 +77,31 @@ class Generator:
         """Generates the body of the phishing email with tracking links and pixel."""
         body_prompt = self.define_body_prompt()
         body = self.generate_text(body_prompt)
+        print(body)
 
         # Add tracking pixel and clickable link URLs
         tracking_pixel_url = f"{self.base_url}/track_open?email={self.parameters['email']}"
         click_tracking_url = f"{self.base_url}/track_click?email={self.parameters['email']}"
 
-        # Modify body to include tracking pixel and clickable link
-        body_with_tracking = f"""
+        # HTML version with tracking links and pixel, ensure proper line breaks and clickable links
+        body_html = f"""
         <html>
-        <body>
-            {body}
-            <p>Please click on the link below:</p>
-            <a href="{click_tracking_url}">Click here to confirm</a>
-            <img src="{tracking_pixel_url}" width="1" height="1" style="display:none;" />
-        </body>
+            <body>
+                <p>{body}</p>
+                <p>How to access the webinar:</p>
+                <p><a href="{click_tracking_url}" target="_blank"> https://webinars.proximus.com/join </a></p>
+                <br>
+                <p><img src="{tracking_pixel_url}" width="1" height="1" style="display:none;" /></p>
+            </body>
         </html>
         """
-        return body_with_tracking
+
+        return body_html, body
 
     def generate_text(self, prompt):
         """Generates content based on the provided prompt using the model."""
         if not self.model:
             raise ValueError("Model is not initialized. Please initialize the model first.")
         # Assuming the model has a method generate_content that returns the text response
-        response = self.model.generate_content(self.prompt)
+        response = self.model.generate_content(prompt)
         return response.text
