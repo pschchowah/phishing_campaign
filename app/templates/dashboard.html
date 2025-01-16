@@ -9,12 +9,54 @@
         p { font-size: 18px; }
         a { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px; }
         a:hover { background-color: #0056b3; }
+        table { width: 100%; margin-top: 30px; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f1f1; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Dashboard</h2>
-        <p>Welcome to your dashboard!</p>
+        <p>Welcome to your Campaign dashboard!</p>
+
+        <!-- Dummy Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email address</th>
+                    <th>Sent</th>
+                    <th>Opened</th>
+                    <th>Clicked</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td>john.doe@proximus.com</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Jane Duke</td>
+                    <td>jane.duke@proximus.com</td>
+                    <td>1</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>Judy Smith</td>
+                    <td>judy.smith@proximus.com</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                </tr>
+            </tbody>
+        </table>
+
         <a href="/">Logout</a>
     </div>
 </body>
