@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 class Emailer:
-    def __init__(self, credentials_path="data/credentials.json", token_path="data/token.json"):
+    def __init__(self, credentials_path="credentials/gmail_credentials.json", token_path="credentials/token.json"):
         """
         Initialize the Emailer class and authenticate with Gmail API.
 
