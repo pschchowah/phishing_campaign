@@ -39,7 +39,7 @@ def sidebar_inputs():
     # Filter Selection
     if "uploaded_data" in st.session_state:
         df = st.session_state["uploaded_data"]
-        filter_columns = ["Proximus Business Unit", "Proximus Team"]
+        filter_columns = df.columns
 
         for column in filter_columns:
             unique_values = df[column].dropna().unique()
@@ -91,7 +91,7 @@ def launch_campaign():
         }
 
         body_html, body = generator.generate_body_with_tracking()
-        subject = generator.generate_text(f"Write the subject for this email in 5 words with 'Proximus Training -' at the beginning : {body}")
+        subject = generator.generate_text(f"Write the subject for this email in 5 words with 'Proximus -' at the beginning : {body}")
 
         sender = "me"
         recipient = row["Email"]

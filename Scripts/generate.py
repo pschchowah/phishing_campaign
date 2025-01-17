@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 class Generator:
-    def __init__(self, model=None, base_url="https://email-tracker-webservice.onrender.com"):
+    def __init__(self, model=None, csv_file="data/dummy-emails - Sheet1.csv", base_url="https://email-tracker-webservice.onrender.com"):
         # Default parameters for the receiver
         self.parameters = {
             "name": "John",
@@ -15,20 +15,26 @@ class Generator:
 
         # Default phishing patterns
         self.patterns = [
-            {"Reason": "Unusual Login Activity Detected"},
-            {"Reason": "Service Upgrade Notification"},
-            {"Reason": "Salary Adjustment Notice"},
-            {"Reason": "New Security Features Available"},
-            {"Reason": "Mandatory Account Verification"},
-            {"Reason": "Upcoming Maintenance Notice"},
-            {"Reason": "Your Account Storage Limit Reached"},
-            {"Reason": "Exclusive Webinar on Proximus AI Solutions"}
+            {"Reason": "Unusual Login Activity Detected", "Fake Link": "https://login.proximus-secure.com"},
+            {"Reason": "Service Upgrade Notification", "Fake Link": "https://update.proximus.com/upgrade"},
+            {"Reason": "Salary Adjustment Notice", "Fake Link": "https://salary.proximus.com"},
+            {"Reason": "New Security Features Available", "Fake Link": "https://security.proximus.com"},
+            {"Reason": "Mandatory Account Verification", "Fake Link": "https://verify.proximus-account.com"},
+            {"Reason": "Upcoming Maintenance Notice", "Fake Link": "https://maintenance.proximus.com"},
+            {"Reason": "Your Account Storage Limit Reached", "Fake Link": "https://storage.proximus.com/manage"},
+            {"Reason": "Exclusive Webinar on Proximus AI Solutions", "Fake Link": "https://webinars.proximus.com/join"}
         ]
 
         # Load the CSV data for sender names
-
+        self.csv_data = pd.read_csv(csv_file)
         self.model = model
         self.base_url = base_url
+
+    def random_date_and_time(self):
+        """Generates a random future date and time."""
+        future_date = datetime.now() + timedelta(days=random.randint(1, 30))
+        random_time = f"{random.randint(8, 17)}:{random.choice(['00', '15', '30', '45'])} ET"
+        return future_date.strftime("%A, %B %d, %Y"), random_time
 
     def random_sender(self):
         """Selects a random sender's first and last name from the CSV dataset."""
@@ -43,6 +49,7 @@ class Generator:
     def define_body_prompt(self):
         """Generates the email body prompt, including dynamic content."""
         random_pick = random.choice(self.patterns)
+        future_date, random_time = self.random_date_and_time()
         sender_first_name, sender_last_name = self.random_sender()
         click_tracking_url = f"{self.base_url}/track_click?email={self.parameters['email']}"
 
@@ -53,8 +60,8 @@ class Generator:
             f"The email should include the following elements:"
             f"1. A clear explanation of why {random_pick['Reason']} is critical, with specific consequences if no action is taken."
             f"2. A specific call to action requiring the recipient to click this link: <a href=\"{click_tracking_url}\">{random_pick['Fake Link']}</a>"
-            f"3. Include a deadline with a random date and time in the near-future, excluding weekends."
-            f"4. Ensure the tone is professional, urgent if necessary, but not overly alarming to avoid suspicion."
+            f"3. Include a deadline with a {future_date} and {random_time} in the near-future, excluding weekends."
+            f"4. Ensure the tone is professional and not overly alarming to avoid suspicion."
             
             f"Remember to:"
             f"- Use realistic and natural-sounding language throughout, avoiding repetitive or template-like phrases."
