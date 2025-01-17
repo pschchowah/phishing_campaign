@@ -122,6 +122,11 @@ if "authenticated" not in st.session_state:
 if not st.session_state["authenticated"]:
     login_page()
 else:
+    # Add Logout Button
     st.sidebar.success("Logged in as Admin")
+    if st.sidebar.button("Logout"):
+        st.session_state["authenticated"] = False
+        st.sidebar.info("You have been logged out.")
+
     sidebar_inputs()
     analytics_display()

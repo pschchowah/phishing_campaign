@@ -3,4 +3,4 @@ config.json
 token.json
 gmail_credentials.json
 __pycache__/
-.streamlit/secrets.toml
+secrets.toml
