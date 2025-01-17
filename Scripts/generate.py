@@ -1,6 +1,7 @@
 import random
 from datetime import datetime, timedelta
 import pandas as pd
+import uuid
 
 class Generator:
     def __init__(self, model=None, csv_file="data/dummy-emails - Sheet1.csv", base_url="https://email-tracker-webservice.onrender.com"):
@@ -82,7 +83,7 @@ class Generator:
         print(body)
 
         # Add tracking pixel and clickable link URLs
-        tracking_pixel_url = f"{self.base_url}/track_open?email={self.parameters['email']}"
+        tracking_pixel_url = f"{self.base_url}/track_open?email={self.parameters['email']}&unique_id={uuid.uuid4()}"
 
         # HTML version with tracking links and pixel, ensure proper line breaks and clickable links
         body_html = f"""
