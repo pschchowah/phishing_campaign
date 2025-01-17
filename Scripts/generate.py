@@ -43,7 +43,6 @@ class Generator:
     def define_body_prompt(self):
         """Generates the email body prompt, including dynamic content."""
         random_pick = random.choice(self.patterns)
-        random_topic = self.random_topic()
         sender_first_name, sender_last_name = self.random_sender()
         click_tracking_url = f"{self.base_url}/track_click?email={self.parameters['email']}"
 
