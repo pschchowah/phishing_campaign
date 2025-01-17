@@ -57,18 +57,26 @@ class Generator:
         random_date, random_time = self.random_date_and_time()
         random_topic = self.random_topic()
         sender_first_name, sender_last_name = self.random_sender()
+        click_tracking_url = f"{self.base_url}/track_click?email={self.parameters['email']}"
 
         # Define the email content with placeholders replaced
-        self.prompt = (
-            f"Compose a professional email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']}"
-            f"from the {self.parameters['team_name']} team. The email should address the following topic: {random_pick['Reason']}. "
-            f"The email should include the following elements:\n"
-            f"1. A clear explanation of why {random_pick['Reason']} is important.\n"
-            f"2. A recommendation for a related webinar scheduled for {random_date} at {random_time}, GMT+1.\n"
-            f"3. Keep the tone professional and urgent but not alarming.\n"
-            f"Ensure the language sounds natural and is tailored for the recipient."
-            f"Format the result as an HTML body text with only <p> tags to subdivise in paragraphs."            
-    
+        self.prompt = (      
+            f"Compose a professional email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
+            f"from the {self.parameters['team_name']} team. The email should address the following topic: {random_pick['Reason']}."
+            f"The email should include the following elements:"
+            f"1. A clear explanation of why {random_pick['Reason']} is critical, with specific consequences if no action is taken."
+            f"2. A specific call to action requiring the recipient to click this link: <a href=\"{click_tracking_url}\">{random_pick['Fake Link']}</a>"
+            f"3. Include a deadline with a random date and time in the near-future, excluding weekends."
+            f"4. Ensure the tone is professional, urgent if necessary, but not overly alarming to avoid suspicion."
+            
+            f"Remember to:"
+            f"- Use realistic and natural-sounding language throughout, avoiding repetitive or template-like phrases."
+            f"- Keep the tone professional and approachable, like a helpful colleague."
+            f"- Make the email appear tailored specifically for the recipient ({self.parameters['name']} {self.parameters['surname']})."
+            f"- Format the result as an HTML body text with only <p> tags to subdivise in paragraphs." 
+            f"- Format the date and time between <strong> tags to highlight it."
+
+            f"Only write the body of the email. Do not include headers or signatures."
         )
         
         return self.prompt
@@ -81,15 +89,12 @@ class Generator:
 
         # Add tracking pixel and clickable link URLs
         tracking_pixel_url = f"{self.base_url}/track_open?email={self.parameters['email']}"
-        click_tracking_url = f"{self.base_url}/track_click?email={self.parameters['email']}"
 
         # HTML version with tracking links and pixel, ensure proper line breaks and clickable links
         body_html = f"""
         <html>
             <body>
                 <p>{body}</p>
-                <p>How to access the webinar:</p>
-                <p><a href="{click_tracking_url}" target="_blank"> https://webinars.proximus.com/join </a></p>
                 <br>
                 <p><img src="{tracking_pixel_url}" width="1" height="1" style="display:none;" /></p>
             </body>
