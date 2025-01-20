@@ -11,13 +11,17 @@ def login_page():
         st.title("Phishing Campaign Manager")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
+        login_button = st.button("Login")
 
-        if st.button("Login"):
-            if username == "admin" and password == "BOUMAN-8":
+        # Fetch credentials from Streamlit secrets
+        stored_username = st.secrets["authentication"]["username"]
+        stored_password = st.secrets["authentication"]["password"]
+
+        if login_button:
+            if username == stored_username and password == stored_password:
                 st.session_state["authenticated"] = True
-                st.rerun()
             else:
-                st.error("Invalid credentials")
+                st.error("Invalid username or password")
 
 
 if not st.session_state["authenticated"]:
