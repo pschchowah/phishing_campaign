@@ -4,7 +4,7 @@ import pandas as pd
 import uuid
 
 class Generator:
-    def __init__(self, model=None, csv_file="data/dummy-emails - Sheet1.csv", base_url="https://email-tracker-webservice.onrender.com"):
+    def __init__(self, model=None, csv_file="data/dummy-emails - Sheet1.csv", base_url="http://localhost:8000"):
         # Default parameters for the receiver
         self.parameters = {
             "name": "John",
