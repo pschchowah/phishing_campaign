@@ -76,7 +76,12 @@ class Generator:
         
         return self.prompt
 
-    def generate_body_with_tracking(self):
+    def generate_body_with_tracking(self, campaign_id):
+
+        """Generates the body of the phishing email with tracking links and pixel."""
+        if not isinstance(campaign_id, int):
+            raise ValueError("campaign_id must be an integer")
+        
         """Generates the body of the phishing email with tracking links and pixel."""
         body_prompt = self.define_body_prompt()
         body = self.generate_text(body_prompt)
