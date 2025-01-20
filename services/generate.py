@@ -47,12 +47,12 @@ class Generator:
             if sender_first_name != self.parameters["name"] and sender_last_name != self.parameters["surname"]:
                 return sender_first_name, sender_last_name
 
-    def define_body_prompt(self):
+    def define_body_prompt(self, campaign_id):
         """Generates the email body prompt, including dynamic content."""
         random_pick = random.choice(self.patterns)
         future_date, random_time = self.random_date_and_time()
         sender_first_name, sender_last_name = self.random_sender()
-        click_tracking_url = f"{self.base_url}/track_click?email={self.parameters['email']}"
+        click_tracking_url = f"{self.base_url}/events/track_click?email={self.parameters['email']}&campaign_id={campaign_id}"
 
         # Define the email content with placeholders replaced
         self.prompt = (      
@@ -83,12 +83,12 @@ class Generator:
             raise ValueError("campaign_id must be an integer")
         
         """Generates the body of the phishing email with tracking links and pixel."""
-        body_prompt = self.define_body_prompt()
+        body_prompt = self.define_body_prompt(campaign_id)
         body = self.generate_text(body_prompt)
         print(body)
 
         # Add tracking pixel and clickable link URLs
-        tracking_pixel_url = f"{self.base_url}/track_open?email={self.parameters['email']}&unique_id={uuid.uuid4()}"
+        tracking_pixel_url = f"{self.base_url}/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}&unique_id={uuid.uuid4()}"
 
         # HTML version with tracking links and pixel, ensure proper line breaks and clickable links
         body_html = f"""
