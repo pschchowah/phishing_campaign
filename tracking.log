@@ -1,2 +1,0 @@
-ERROR:asyncio:Task was destroyed but it is pending!
-task: <Task pending name='Task-3' coro=<Kernel.poll_control_queue() running at /Users/patrycjaschaefer/PycharmProjects/boon/.venv/lib/python3.12/site-packages/ipykernel/kernelbase.py:309> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[_chain_future.<locals>._call_set_state() at /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/futures.py:398]>
