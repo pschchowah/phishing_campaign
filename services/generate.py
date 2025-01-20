@@ -4,37 +4,55 @@ import pandas as pd
 
 
 class Generator:
-    def __init__(self, model=None,
-                 csv_file="data/dummy-emails - Sheet1.csv",
-                 base_url="https://email-tracker-webservice.onrender.com"):
+    def __init__(
+        self,
+        model=None,
+        csv_file="data/dummy-emails - Sheet1.csv",
+        base_url="http://localhost:8000",
+    ):
         # Default parameters for the receiver
         self.parameters = {
             "name": "John",
             "surname": "Doe",
             "email": "john.doe@example.com",
             "business_unit": "Business Solutions",
-            "team_name": "Operations Team"
+            "team_name": "Operations Team",
         }
 
         # Default phishing patterns
         self.patterns = [
-            {"Reason": "Unusual Login Activity Detected",
-             "Fake Link": "https://login.proximus-secure.com"},
-            {"Reason": "Service Upgrade Notification",
-             "Fake Link": "https://update.proximus.com/upgrade"},
-            {"Reason": "Salary Adjustment Notice",
-             "Fake Link": "https://salary.proximus.com"},
-            {"Reason": "New Security Features Available",
-             "Fake Link": "https://security.proximus.com"},
-            {"Reason": "Mandatory Account Verification",
-             "Fake Link": "https://verify.proximus-account.com"},
-            {"Reason": "Upcoming Maintenance Notice",
-             "Fake Link": "https://maintenance.proximus.com"},
-            {"Reason": "Your Account Storage Limit Reached",
-             "Fake Link": "https://storage.proximus.com/manage"},
+            {
+                "Reason": "Unusual Login Activity Detected",
+                "Fake Link": "https://login.proximus-secure.com",
+            },
+            {
+                "Reason": "Service Upgrade Notification",
+                "Fake Link": "https://update.proximus.com/upgrade",
+            },
+            {
+                "Reason": "Salary Adjustment Notice",
+                "Fake Link": "https://salary.proximus.com",
+            },
+            {
+                "Reason": "New Security Features Available",
+                "Fake Link": "https://security.proximus.com",
+            },
+            {
+                "Reason": "Mandatory Account Verification",
+                "Fake Link": "https://verify.proximus-account.com",
+            },
+            {
+                "Reason": "Upcoming Maintenance Notice",
+                "Fake Link": "https://maintenance.proximus.com",
+            },
+            {
+                "Reason": "Your Account Storage Limit Reached",
+                "Fake Link": "https://storage.proximus.com/manage",
+            },
             {
                 "Reason": "Exclusive Webinar on Proximus AI Solutions",
-                "Fake Link": "https://webinars.proximus.com/join"}
+                "Fake Link": "https://webinars.proximus.com/join",
+            },
         ]
 
         # Load the CSV data for sender names
@@ -44,17 +62,19 @@ class Generator:
 
     def random_date_and_time(self):
         """Generates a random future date and time."""
-        future_date = datetime.now() + timedelta(
-            days=random.randint(1, 30))
-        random_time = f"{random.randint(8, 17)}:{random.choice(['00', '15', '30', '45'])} ET"
-        return future_date.strftime(
-            "%A, %B %d, %Y"), random_time
+        future_date = datetime.now() + timedelta(days=random.randint(1, 30))
+        random_time = (
+            f"{random.randint(8, 17)}:{random.choice(['00', '15', '30', '45'])} ET"
+        )
+        return future_date.strftime("%A, %B %d, %Y"), random_time
 
     def random_topic(self):
         """Generates a random webinar topic."""
-        topics = ["AI Trends in 2025",
-                  "Machine Learning Best Practices",
-                  "Optimizing Your AI Workflows"]
+        topics = [
+            "AI Trends in 2025",
+            "Machine Learning Best Practices",
+            "Optimizing Your AI Workflows",
+        ]
         return random.choice(topics)
 
     def random_sender(self):
@@ -64,9 +84,10 @@ class Generator:
             sender_first_name = sender_row["First Name"]
             sender_last_name = sender_row["Last Name"]
             # Ensure the sender is not the same as the receiver
-            if sender_first_name != self.parameters[
-                "name"] and sender_last_name != \
-                    self.parameters["surname"]:
+            if (
+                sender_first_name != self.parameters["name"]
+                and sender_last_name != self.parameters["surname"]
+            ):
                 return sender_first_name, sender_last_name
 
     def define_body_prompt(self):
@@ -87,21 +108,24 @@ class Generator:
             f"Ensure the language sounds natural and is tailored for the recipient."
             f"Format the result as an HTML body text with only <p> tags to subdivise in paragraphs."
             f"Never add links directly, it will be implemented with static html afterwards.\n"
-            )
+        )
 
         return self.prompt
 
-    def generate_body_with_tracking(self):
+    def generate_body_with_tracking(self, campaign_id: int):
         """Generates the body of the phishing email with tracking links and pixel."""
+        if not isinstance(campaign_id, int):
+            raise ValueError("campaign_id must be an integer")
+
         body_prompt = self.define_body_prompt()
         body = self.generate_text(body_prompt)
         print(body)
 
-        # Add tracking pixel and clickable link URLs
-        tracking_pixel_url = f"{self.base_url}/track_open?email={self.parameters['email']}"
-        click_tracking_url = f"{self.base_url}/track_click?email={self.parameters['email']}"
+        # Add tracking pixel and clickable link URLs with campaign_id
+        tracking_pixel_url = f"{self.base_url}/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
+        click_tracking_url = f"{self.base_url}/events/track_click?email={self.parameters['email']}&campaign_id={campaign_id}"
 
-        # HTML version with tracking links and pixel, ensure proper line breaks and clickable links
+        # HTML version with tracking links and pixel
         body_html = f"""
         <html>
             <body>
@@ -120,7 +144,8 @@ class Generator:
         """Generates content based on the provided prompt using the model."""
         if not self.model:
             raise ValueError(
-                "Model is not initialized. Please initialize the model first.")
+                "Model is not initialized. Please initialize the model first."
+            )
         # Assuming the model has a method generate_content that returns the text response
         response = self.model.generate_content(prompt)
         return response.text

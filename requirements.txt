@@ -3,3 +3,7 @@ uvicorn
 bcrypt
 passlib
 cryptography
+requests
+streamlit
+pandas
+python-multipart
