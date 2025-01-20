@@ -14,7 +14,7 @@ class Configurator:
             self.get_api_key()
 
     def get_api_key(self):
-        config_file = "data/config.json"
+        config_file = "credentials/config.json"
 
         if os.path.exists(config_file):
             with open(config_file, "r") as file:
