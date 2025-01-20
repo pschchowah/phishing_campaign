@@ -6,7 +6,7 @@ if "authenticated" not in st.session_state:
 
 
 def login_page():
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1,3,1])
     with col2:
         st.title("Phishing Campaign Manager")
         username = st.text_input("Username")
