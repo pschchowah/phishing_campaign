@@ -25,7 +25,7 @@ def launch_campaign(
 
     # Send emails
     for _, row in df.iterrows():
-        time.sleep(1)
+        time.sleep(5)
 
         receiver_name = row["First Name"]
         receiver_surname = row["Last Name"]
