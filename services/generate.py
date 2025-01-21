@@ -116,7 +116,7 @@ class Generator:
 
         body_prompt = self.define_body_prompt(campaign_id)
         body = self.generate_text(body_prompt)
-
+        print(body)
         # Create tracking pixel URL
         tracking_pixel_url = f"{self.base_url}/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
 
@@ -134,6 +134,7 @@ class Generator:
                         alt="" 
                         style="display:none">
                 </body>
+                <p> <a href="{self.base_url}/events/track_reported?email={self.parameters['email']}&campaign_id={campaign_id}"> Report phishing </a>  </p>
             </html>
         """
 

@@ -1,11 +1,15 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, Response
+from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from .. import models, database
 from pydantic import BaseModel
 from datetime import datetime
+from fastapi.templating import Jinja2Templates
+
 
 router = APIRouter(prefix="/events", tags=["events"])
+templates = Jinja2Templates(directory="api/templates")
 
 
 class EventResponse(BaseModel):
@@ -47,7 +51,7 @@ def track_open(
     return {"status": "success"}
 
 
-@router.get("/track_click")
+@router.get("/track_click", response_class=HTMLResponse)
 def track_click(
     request: Request,
     email: str,
@@ -70,6 +74,49 @@ def track_click(
     db.add(event)
     db.commit()
     db.refresh(event)
+    # return fake submission html form to log a submitted event
+    return templates.TemplateResponse(
+        "submission.html", {"request": request, "campaign_id": campaign_id}
+    )
+
+
+@router.post("/track_submitted")
+async def track_submitted(request: Request, db: Session = Depends(database.get_db)):
+    form = await request.form()
+    email = form.get("email")
+    campaign_id = form.get("campaign_id")
+    print(email)
+    # Create SUBMITTED event
+    event = models.Event(
+        email=email,
+        campaign_id=campaign_id,
+        event_type=models.EventType.SUBMITTED,
+        ip=request.client.host,
+    )
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+
+    return {"status": "success"}
+
+
+@router.get("/track_reported")
+def track_reported(
+    request: Request,
+    email: str,
+    campaign_id: int,
+    db: Session = Depends(database.get_db),
+):
+    event = models.Event(
+        email=email,
+        campaign_id=campaign_id,
+        event_type=models.EventType.REPORTED,
+        ip=request.client.host,
+    )
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+
     return {"status": "success"}
 
 
