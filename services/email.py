@@ -2,11 +2,15 @@ import base64
 import os.path
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+import mimetypes
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from services.generate import Generator
 
 
 class Emailer:
@@ -65,24 +69,45 @@ class Emailer:
         :return: A dictionary containing the base64-encoded email message.
         """
         # Create a MIMEMultipart message
-        message = MIMEMultipart("alternative")
+        message = MIMEMultipart("mixed")
         message["to"] = to
         message["from"] = sender
         message["subject"] = subject
 
-        # Add plain-text and HTML versions of the email
+       # Create the alternative part for plain text and HTML
+        alternative_part = MIMEMultipart("alternative")
+        alternative_part.attach(MIMEText(message_text, "plain"))
+        alternative_part.attach(MIMEText(message_html, "html"))
+        message.attach(alternative_part)
 
-        part_html = MIMEText(message_html, "html")
-        part_plain = MIMEText(message_text, "plain")
+        # Attach a file if provided
+        gen = Generator()
+        attachment_path = gen.generate_fake_attachment(file_type="jpg", file_size_kb=200)
+        if attachment_path:
+            file_name = os.path.basename(attachment_path)
+            mime_type, _ = mimetypes.guess_type(attachment_path)
+            mime_type = mime_type or "application/octet-stream"
+            main_type, sub_type = mime_type.split("/", 1)
 
-        # Attach both parts to the message
+            with open(attachment_path, "rb") as attachment_file:
+                # Create a MIMEBase object and set the payload
+                part = MIMEBase(main_type, sub_type)
+                part.set_payload(attachment_file.read())
 
-        message.attach(part_plain)
-        message.attach(part_html)
+            # Encode the payload in base64
+            encoders.encode_base64(part)
+
+            # Add headers for the attachment
+            part.add_header(
+                "Content-Disposition",
+                f'attachment; filename="{file_name}"',
+            )
+
+            # Attach the file to the message
+            message.attach(part)
 
         # Return the raw base64-encoded message
-        return {"raw": base64.urlsafe_b64encode(
-            message.as_bytes()).decode()}
+        return {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
     def send_message(self, message):
         """

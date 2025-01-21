@@ -1,7 +1,7 @@
 import random
 from datetime import datetime, timedelta
 import pandas as pd
-import uuid
+import os
 
 
 class Generator:
@@ -138,6 +138,35 @@ class Generator:
         """
 
         return body_html, body
+    
+    def generate_fake_attachment(self, file_type="jpg", file_size_kb=100):
+        """
+        Generates a fake attachment file with random content.
+
+        Args:
+            file_type (str): The type of the file (e.g., 'pdf', 'docx', 'xlsx').
+            file_size_kb (int): The size of the file in kilobytes.
+
+        Returns:
+            str: The file path of the generated fake attachment.
+        """
+        # Validate the file type
+        valid_file_types = ["pdf", "docx", "xlsx", "txt", "jpg", "png"]
+        if file_type not in valid_file_types:
+            raise ValueError(f"Unsupported file type: {file_type}. Choose from {valid_file_types}.")
+
+        # Generate a random file name
+        file_name = f"attachment_{random.randint(1000, 9999)}.{file_type}"
+        file_path = os.path.join("attachments", file_name)
+
+        # Ensure the directory exists
+        os.makedirs("attachments", exist_ok=True)
+
+        # Generate random content to mimic a real file
+        with open(file_path, "wb") as f:
+            f.write(os.urandom(file_size_kb * 1024))  # Write random binary data
+
+        return file_path
 
     def generate_text(self, prompt):
         """Generates content based on the provided prompt using the model."""
