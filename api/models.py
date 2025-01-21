@@ -41,5 +41,29 @@ class Event(Base):
     event_type = Column(Enum(EventType))
     timestamp = Column(DateTime, default=func.now())
 
+    # Relationship with Employee
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    employee = relationship("Employee", back_populates="events")
     # Relationship with Campaign
     campaign = relationship("Campaign", back_populates="events")
+
+
+class Employee(Base):
+    __tablename__ = "employees"
+
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    business_unit = Column(String, nullable=True)
+    team_name = Column(String, nullable=True)
+    score = Column(Integer, default=0)
+    created_at = Column(DateTime, server_default=func.now())
+
+    events = relationship("Event", back_populates="employee")
+
+
+
+
+
+

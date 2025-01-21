@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from . import models, database
-from .routers import campaigns, events
+from .routers import campaigns, events, employees
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -29,3 +29,4 @@ app.add_middleware(
 # Include routers
 app.include_router(campaigns.router)
 app.include_router(events.router)
+app.include_router(employees.router)

@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import sys
 from pathlib import Path
+from sqlalchemy.orm import Session
+
+
 
 # Add project root to Python path
 root_dir = Path(__file__).parent.parent.parent
@@ -9,6 +12,8 @@ sys.path.append(str(root_dir))
 from services.launch import launch_campaign
 from api_client import APIClient
 from services.generate import Generator
+from api.database import SessionLocal
+from api import models, database
 
 gen = Generator()
 
@@ -103,7 +108,43 @@ def campaign_launch_form():
                                 name=campaign_name,
                                 description=campaign_description or "",
                             )
+                            # Process CSV and add employees to the database
+                            db = SessionLocal()
+                           # Initialize counter
+                            added_count = 0
 
+                            # Iterate through CSV
+                            try:
+                                for _, row in df.iterrows():
+                                    email = row["Email"]
+                                    # Check if the employee exists in the database
+                                    existing_employee = db.query(models.Employee).filter(models.Employee.email == email).first()
+
+                                    if not existing_employee:
+                                        try:
+                                            employee_data = {
+                                            "first_name": row["First Name"],
+                                            "last_name": row["Last Name"],
+                                            "email": row["Email"],
+                                            "business_unit": row.get("Proximus Business Unit", ""),
+                                            "team_name": row.get("Proximus Team", ""),
+                                            "score": 0,
+                                        }                       
+                                            # Add new employee via API
+                                            api_client.add_employee(employee_data)
+                                            added_count += 1
+                                        except Exception as e:
+                                            st.error(f"Failed to add employee {email}: {str(e)}")
+                                    else:
+                                        st.warning(f"Employee with email '{email}' already exists in the database")
+                                
+                                if added_count > 0:
+                                    st.success(f"{added_count} new employees added successfully.")
+                                else:
+                                    st.info("No new employees were added.")
+                            except Exception as e:
+                                st.error(f"Error processing CSV: {str(e)}")
+                                
                             # Then launch the emails using the service
                             with st.spinner("Sending emails..."):
                                 # Apply Filters
