@@ -82,8 +82,8 @@ class Emailer:
 
         # Attach a file if provided
         gen = Generator()
-        attachment_path = gen.generate_fake_attachment(file_type="jpg", file_size_kb=200)
-        if attachment_path:
+        attachment_path = "attachments/attachment_9847.jpg"
+        if os.path.exists(attachment_path):
             file_name = os.path.basename(attachment_path)
             mime_type, _ = mimetypes.guess_type(attachment_path)
             mime_type = mime_type or "application/octet-stream"
