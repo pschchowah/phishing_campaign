@@ -8,6 +8,9 @@ from .database import Base
 class EventType(enum.Enum):
     OPEN = "open"
     CLICK = "click"
+    SUBMITTED = "submitted"
+    REPORTED = "reported"
+    DOWNLOADED_ATTACHMENT = "downloaded_attachement"
 
 
 class CampaignStatus(enum.Enum):

@@ -2,6 +2,7 @@ from services.config import Configurator
 from services.generate import Generator
 from services.email import Emailer
 import pandas as pd
+import time
 
 
 def launch_campaign(
@@ -22,6 +23,8 @@ def launch_campaign(
 
     # Send emails
     for _, row in df.iterrows():
+        time.sleep(1)
+
         receiver_name = row["First Name"]
         receiver_surname = row["Last Name"]
 

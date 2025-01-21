@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="/events/track_submitted" method="post">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="hidden" name="campaign_id" value={{campaign_id}}>
+        <input type="hidden" name="employee_email" value={{campaign_id}}>
+        <button type="submit">Login</button>
+    </form>
+</body>
+
+</html>
