@@ -1,6 +1,7 @@
 # Ignore configuration files with sensitive data
 credentials/config.json
 credentials/gmail_credentials.json
+credentials/token.json
 *.db
 __pycache__/
 .venv/
