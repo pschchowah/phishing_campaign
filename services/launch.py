@@ -3,15 +3,17 @@ from services.generate import Generator
 from services.email import Emailer
 import pandas as pd
 import time
+import streamlit as st
 
 
 def launch_campaign(
-    campaign_name: str, description: str, df: pd.DataFrame, campaign_id: int
+    campaign_name: str, description: str, df: pd.DataFrame, campaign_id: int, reason, link
 ):
     """
     Launches a phishing campaign with the given parameters and target list.
     Campaign must already exist in the database.
     """
+
     # Initialize services
     config = Configurator()
     config.connect()
@@ -37,7 +39,7 @@ def launch_campaign(
         }
 
         # Generate email with campaign tracking
-        body_html, body = generator.generate_body_with_tracking(campaign_id)
+        body_html, body = generator.generate_body_with_tracking(campaign_id, reason, link)
 
         subject = generator.generate_text(
             f"Write the subject for this email in 5 words with 'Proximus -' at the beginning : {body}"

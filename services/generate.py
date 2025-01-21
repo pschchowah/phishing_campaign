@@ -82,9 +82,8 @@ class Generator:
             ):
                 return sender_first_name, sender_last_name
 
-    def define_body_prompt(self, campaign_id):
+    def define_body_prompt(self, campaign_id, reason, link):
         """Generates the email body prompt, including dynamic content."""
-        random_pick = random.choice(self.patterns)
         future_date, random_time = self.random_date_and_time()
         sender_first_name, sender_last_name = self.random_sender()
         click_tracking_url = f"{self.base_url}/events/track_click?email={self.parameters['email']}&campaign_id={campaign_id}"
@@ -92,10 +91,10 @@ class Generator:
         # Define the email content with placeholders replaced
         self.prompt = (
             f"Compose a professional email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
-            f"from the {self.parameters['team_name']} team. The email should address the following topic: {random_pick['Reason']}."
+            f"from the {self.parameters['team_name']} team. The email should address the following topic: {reason}."
             f"The email should include the following elements:"
-            f"1. A clear explanation of why {random_pick['Reason']} is critical, with specific consequences if no action is taken."
-            f"2. A specific call to action requiring the recipient to click this link: <a href=\"{click_tracking_url}\">{random_pick['Fake Link']}</a>"
+            f"1. A clear explanation of why {reason} is critical, with specific consequences if no action is taken."
+            f"2. A specific call to action requiring the recipient to click this link: <a href=\"{click_tracking_url}\">{link}</a>"
             f"3. Include a deadline with a {future_date} and {random_time} in the near-future, excluding weekends."
             f"4. Ensure the tone is professional and not overly alarming to avoid suspicion."
             f"Remember to:"
@@ -109,14 +108,14 @@ class Generator:
 
         return self.prompt
 
-    def generate_body_with_tracking(self, campaign_id):
+    def generate_body_with_tracking(self, campaign_id, reason, link):
         """Generates the body of the phishing email with tracking links and pixel."""
         if not isinstance(campaign_id, int):
             raise ValueError("campaign_id must be an integer")
 
-        body_prompt = self.define_body_prompt(campaign_id)
+        body_prompt = self.define_body_prompt(campaign_id, reason, link)
         body = self.generate_text(body_prompt)
-        print(body)
+
         # Create tracking pixel URL
         tracking_pixel_url = f"{self.base_url}/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
 
