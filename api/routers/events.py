@@ -97,7 +97,9 @@ async def track_submitted(request: Request, db: Session = Depends(database.get_d
     db.commit()
     db.refresh(event)
 
-    return {"status": "success"}
+    return templates.TemplateResponse(
+        "phished.html", {"request": request}
+    )
 
 
 @router.get("/track_reported")

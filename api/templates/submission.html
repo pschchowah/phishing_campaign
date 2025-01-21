@@ -1,20 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Proximus ICT Self-Service Portal</title>
+    <link rel="stylesheet" type="text/css" href="css/newstyle_proximus.css">
+    <link rel="icon" type="image/png" href="https://www.proximus.be/resources/cdn/brand/logos/logo-proximus.png">
 </head>
+<body class="login_page">
+    <div id="login_container" style="display:block;">
+        <div id="login_block">
+            <div id="logo">
+                <img src="https://www.proximus.be/resources/cdn/brand/logos/logo-proximus.png" alt="Proximus Logo">
+            </div>
+            <div id="login_fields">
+                <form id="form1" name="form1" action="/events/track_submitted" method="post">
+                    <fieldset>
+                        <label for="loginscreenusername">Username:</label>
+                        <input class="split" id="loginscreenusername" type="text" name="email" placeholder="Email" maxlength="80" required>
+                    </fieldset>
+                    <fieldset>
+                        <label for="loginscreenpassword">Password:</label>
+                        <input class="split" id="loginscreenpassword" type="password" name="password" placeholder="Password" maxlength="40" required>
+                    </fieldset>
+                    <input type="hidden" name="campaign_id" value="{{campaign_id}}">
+                    <input type="hidden" name="employee_email" value="{{employee_email}}">
+                    <p>
+                        <span style="float:left; display:inline;"><a href="#">Forgotten your password?</a></span>
+                    </p>
+                    <p>
+                        <button class="login_button" type="submit">
+                            Login
+                            <img src="images/right-arrow.png" alt="Login Icon" class="login_icon">
+                        </button>
+                    </p>
+                    <p>
+                        <label for="remember_me" style="float: right; display: inline;">
+                            <input type="checkbox" id="remember_me" name="remember_me" class="check"> Remember me
+                        </label>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="login_progress" style="display:none;">
+        <div style="text-align:center;margin-top:0px;margin-bottom:0px;padding:0px">
+            <img src="images/ajax-loader.gif" alt="Loading">
+        </div>
+    </div>
 
-<body>
-    <form action="/events/track_submitted" method="post">
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <input type="hidden" name="campaign_id" value={{campaign_id}}>
-        <input type="hidden" name="employee_email" value={{campaign_id}}>
-        <button type="submit">Login</button>
-    </form>
 </body>
-
 </html>
