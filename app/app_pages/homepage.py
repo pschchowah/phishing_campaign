@@ -5,7 +5,6 @@ from pathlib import Path
 from sqlalchemy.orm import Session
 
 
-
 # Add project root to Python path
 root_dir = Path(__file__).parent.parent.parent
 sys.path.append(str(root_dir))
@@ -43,7 +42,7 @@ def campaign_launch_form():
         "How would you like to provide the Fake Reason?",
         options=["Choose from list", "Input manually"],
         index=0,
-        help="Select whether to choose a reason from the list or input your own."
+        help="Select whether to choose a reason from the list or input your own.",
     )
 
     if reason_selection_mode == "Choose from list":
@@ -51,17 +50,21 @@ def campaign_launch_form():
             "Fake Reason",
             reasons,
             default=[reasons[0]],
-            help="Required - A unique fake reason for your campaign."
+            help="Required - A unique fake reason for your campaign.",
         )
     else:
-        fake_reason = [st.text_input("Enter Fake Reason", help="Required - PRESS ENTER FOR VALIDATION.")]
+        fake_reason = [
+            st.text_input(
+                "Enter Fake Reason", help="Required - PRESS ENTER FOR VALIDATION."
+            )
+        ]
 
     # Fake Link selection or input
     link_selection_mode = st.radio(
         "How would you like to provide the Fake Link?",
         options=["Choose from list", "Input manually"],
         index=0,
-        help="Select whether to choose a link from the list or input your own."
+        help="Select whether to choose a link from the list or input your own.",
     )
 
     if link_selection_mode == "Choose from list":
@@ -69,10 +72,14 @@ def campaign_launch_form():
             "Fake Link",
             links,
             default=[links[0]],
-            help="Required - A unique fake link for your campaign."
+            help="Required - A unique fake link for your campaign.",
         )
     else:
-        fake_link = [st.text_input("Enter Fake Link", help="Required - PRESS ENTER FOR VALIDATION.")]
+        fake_link = [
+            st.text_input(
+                "Enter Fake Link", help="Required - PRESS ENTER FOR VALIDATION."
+            )
+        ]
 
     # Target selection section
     st.subheader("Target Selection")
@@ -83,10 +90,12 @@ def campaign_launch_form():
             df = pd.read_csv(uploaded_file)
 
             # Filter Selection
-            
-            filter_columns = df.columns
 
+            filter_columns = [
+                col for col in df.columns if col != "First Name" and col != "Last Name"
+            ]
             for column in filter_columns:
+                print(column != "First Name")
                 unique_values = df[column].dropna().unique()
                 selected_values = st.multiselect(f"Filter by {column}", unique_values)
 
@@ -103,14 +112,23 @@ def campaign_launch_form():
                     try:
                         with st.spinner("Creating campaign..."):
                             # First create the campaign in the database
+                            if "filters" in st.session_state:
+                                for column, values in st.session_state[
+                                    "filters"
+                                ].items():
+                                    df = df[df[column].isin(values)]
+
+                                # Get target count
+                            target_count = len(df)
                             api_client = APIClient()
                             campaign = api_client.create_campaign(
                                 name=campaign_name,
                                 description=campaign_description or "",
+                                target_count=target_count,
                             )
                             # Process CSV and add employees to the database
                             db = SessionLocal()
-                           # Initialize counter
+                            # Initialize counter
                             added_count = 0
 
                             # Iterate through CSV
@@ -118,49 +136,58 @@ def campaign_launch_form():
                                 for _, row in df.iterrows():
                                     email = row["Email"]
                                     # Check if the employee exists in the database
-                                    existing_employee = db.query(models.Employee).filter(models.Employee.email == email).first()
+                                    existing_employee = (
+                                        db.query(models.Employee)
+                                        .filter(models.Employee.email == email)
+                                        .first()
+                                    )
 
                                     if not existing_employee:
                                         try:
                                             employee_data = {
-                                            "first_name": row["First Name"],
-                                            "last_name": row["Last Name"],
-                                            "email": row["Email"],
-                                            "business_unit": row.get("Proximus Business Unit", ""),
-                                            "team_name": row.get("Proximus Team", ""),
-                                            "score": 0,
-                                        }                       
+                                                "first_name": row["First Name"],
+                                                "last_name": row["Last Name"],
+                                                "email": row["Email"],
+                                                "business_unit": row.get(
+                                                    "Proximus Business Unit", ""
+                                                ),
+                                                "team_name": row.get(
+                                                    "Proximus Team", ""
+                                                ),
+                                                "score": 0,
+                                            }
                                             # Add new employee via API
                                             api_client.add_employee(employee_data)
                                             added_count += 1
                                         except Exception as e:
-                                            st.error(f"Failed to add employee {email}: {str(e)}")
-                                    else:
-                                        st.warning(f"Employee with email '{email}' already exists in the database")
-                                
+                                            st.error(
+                                                f"Failed to add employee {email}: {str(e)}"
+                                            )
+
                                 if added_count > 0:
-                                    st.success(f"{added_count} new employees added successfully.")
+                                    st.success(
+                                        f"{added_count} new employees added successfully."
+                                    )
                                 else:
                                     st.info("No new employees were added.")
                             except Exception as e:
                                 st.error(f"Error processing CSV: {str(e)}")
-                                
+
                             # Then launch the emails using the service
                             with st.spinner("Sending emails..."):
                                 # Apply Filters
-                                if "filters" in st.session_state:
-                                    for column, values in st.session_state["filters"].items():
-                                        df = df[df[column].isin(values)]  # Apply the filter on the DataFrame
+                                # Apply the filter on the DataFrame
                                 launch_campaign(
                                     campaign_name=campaign_name,
                                     description=campaign_description or "",
                                     df=df,
                                     campaign_id=campaign["id"],
-                                    reason = fake_reason,
-                                    link = fake_link
+                                    reason=fake_reason,
+                                    link=fake_link,
                                 )
 
                         st.success(f"Campaign '{campaign_name}' launched successfully!")
+                        st.info(f"Campaign targets: {target_count}")
                     except Exception as e:
                         st.error(f"Error launching campaign: {str(e)}")
 

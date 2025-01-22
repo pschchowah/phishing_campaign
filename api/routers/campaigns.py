@@ -12,6 +12,7 @@ router = APIRouter(prefix="/campaigns", tags=["campaigns"])
 class CampaignCreate(BaseModel):
     name: str
     description: str = ""
+    target_count: int
 
 
 class CampaignResponse(BaseModel):
@@ -20,6 +21,7 @@ class CampaignResponse(BaseModel):
     description: str
     status: str
     created_at: datetime
+    target_count: int
 
     class Config:
         from_attributes = True
@@ -31,6 +33,7 @@ def create_campaign(campaign: CampaignCreate, db: Session = Depends(database.get
         db_campaign = models.Campaign(
             name=campaign.name,
             description=campaign.description,
+            target_count=campaign.target_count,
             status=models.CampaignStatus.RUNNING,
         )
         db.add(db_campaign)

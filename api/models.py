@@ -26,6 +26,7 @@ class Campaign(Base):
     description = Column(String, nullable=True)
     status = Column(Enum(CampaignStatus), default=CampaignStatus.RUNNING)
     created_at = Column(DateTime, server_default=func.now())
+    target_count = Column(Integer, nullable=False)
 
     # Relationship with events
     events = relationship("Event", back_populates="campaign")
@@ -60,9 +61,3 @@ class Employee(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     events = relationship("Event", back_populates="employee")
-
-
-
-
-
-
