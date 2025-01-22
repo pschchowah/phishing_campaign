@@ -98,9 +98,10 @@ async def track_submitted(request: Request, db: Session = Depends(database.get_d
     form = await request.form()
     email = form.get("email")
     campaign_id = form.get("campaign_id")
-    employee_id = form.get("employee_id")
+    #employee_id = form.get("employee_id")
     print(email)
     
+    # Get employee_id from email
     # Get employee_id from email
     employee = db.query(models.Employee).filter(models.Employee.email == email).first()
     if not employee:
@@ -111,7 +112,7 @@ async def track_submitted(request: Request, db: Session = Depends(database.get_d
     event = models.Event(
         email=email,
         campaign_id=campaign_id,
-        employee_id=employee_id,
+        employee_id=employee.id,
         event_type=models.EventType.SUBMITTED,
         ip=request.client.host,
     )
@@ -127,22 +128,33 @@ def track_reported(
     request: Request,
     email: str,
     campaign_id: int,
-    employee_id: int,
     db: Session = Depends(database.get_db),
-):
-    event = models.Event(
-        email=email,
-        campaign_id=campaign_id,
-        employee_id=employee_id,
-        event_type=models.EventType.REPORTED,
-        ip=request.client.host,
-    )
-    db.add(event)
-    db.commit()
-    db.refresh(event)
+):  
+    try:
+       # Get employee from email
+        employee = db.query(models.Employee).filter(models.Employee.email == email).first()
+        
+        
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+        
+        event = models.Event(
+            email=email,
+            campaign_id=campaign_id,
+            employee_id=employee.id,
+            event_type=models.EventType.REPORTED,
+            ip=request.client.host,
+        )
+        db.add(event)
+        db.commit()
+        db.refresh(event)
 
-    return {"status": "success"}
-
+        return {"status": "success"}
+    
+    except Exception as e:
+        print(f"Track reported error: {str(e)}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/", response_model=List[EventResponse])
 def get_events(
