@@ -160,6 +160,40 @@ def track_reported(
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/track_downloaded")
+def track_reported(
+    request: Request,
+    email: str,
+    campaign_id: int,
+    db: Session = Depends(database.get_db),
+):
+    try:
+        # Get employee from email
+        employee = (
+            db.query(models.Employee).filter(models.Employee.email == email).first()
+        )
+
+        if not employee:
+            raise HTTPException(status_code=404, detail="Employee not found")
+
+        event = models.Event(
+            email=email,
+            campaign_id=campaign_id,
+            employee_id=employee.id,
+            event_type=models.EventType.DOWNLOADED_ATTACHMENT,
+            ip=request.client.host,
+        )
+        db.add(event)
+        db.commit()
+        db.refresh(event)
+
+        return {"status": "success"}
+
+    except Exception as e:
+        print(f"Track reported error: {str(e)}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/", response_model=List[EventResponse])
 def get_events(

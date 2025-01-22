@@ -36,7 +36,7 @@ else:
     navigation = st.navigation(
         [
             st.Page("app_pages/homepage.py", title="Campaign Launch"),
-            st.Page("app_pages/events_overview.py", title="Events Overview"),
+            st.Page("app_pages/events_overview.py", title="Data Overview"),
             st.Page("app_pages/email_dashboard.py", title="Email Dashboard"),
         ]
     )
