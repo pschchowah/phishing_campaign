@@ -36,15 +36,14 @@ class Event(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     campaign_id = Column(Integer, ForeignKey("campaigns.id"), nullable=False)
+    employee_id = Column(Integer, ForeignKey("employees.id"), nullable=False)
     email = Column(String, index=True)
     ip = Column(String)
     event_type = Column(Enum(EventType))
     timestamp = Column(DateTime, default=func.now())
 
-    # Relationship with Employee
-    employee_id = Column(Integer, ForeignKey("employees.id"))
-    employee = relationship("Employee", back_populates="events")
     # Relationship with Campaign
+    employee = relationship("Employee", back_populates="events")
     campaign = relationship("Campaign", back_populates="events")
 
 
