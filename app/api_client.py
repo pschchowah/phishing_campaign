@@ -24,10 +24,16 @@ class APIClient:
             )
             raise
 
-    def create_campaign(self, name: str, description: str = "") -> Dict:
+    def create_campaign(
+        self, name: str, target_count: int, description: str = ""
+    ) -> Dict:
         """Create a new campaign"""
         try:
-            data = {"name": name, "description": description}
+            data = {
+                "name": name,
+                "target_count": target_count,
+                "description": description,
+            }
             response = requests.post(f"{self.base_url}/campaigns", json=data)
             response.raise_for_status()
             return response.json()
@@ -82,20 +88,15 @@ class APIClient:
 
     def add_employee(self, employee_data: Dict[str, Any]) -> Dict:
         """
-        Add an employee to database 
+        Add an employee to database
         """
         try:
             if not employee_data.get("email"):
-                raise ValueError("Email is required"
-                )
-             # Debug print of request data    
+                raise ValueError("Email is required")
+            # Debug print of request data
             print(f"Sending employee data: {employee_data}")
-            
 
-            response = requests.post(
-                f"{self.base_url}/employees",
-                json=employee_data
-            )
+            response = requests.post(f"{self.base_url}/employees", json=employee_data)
             # Print detailed error response
             if not response.ok:
                 print(f"Response status: {response.status_code}")
@@ -107,9 +108,11 @@ class APIClient:
         except requests.exceptions.RequestException as e:
             print(f"Error adding employee: {str(e)}")
             print(f"Request body: {employee_data}")
-            print(f"Response content: {e.response.content if hasattr(e, 'response') else 'No response content'}")
+            print(
+                f"Response content: {e.response.content if hasattr(e, 'response') else 'No response content'}"
+            )
             raise
-    
+
     def get_employees(self) -> List[Dict]:
         """Get all employees"""
         try:
