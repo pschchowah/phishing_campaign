@@ -95,7 +95,6 @@ def campaign_launch_form():
                 col for col in df.columns if col != "First Name" and col != "Last Name"
             ]
             for column in filter_columns:
-                print(column != "First Name")
                 unique_values = df[column].dropna().unique()
                 selected_values = st.multiselect(f"Filter by {column}", unique_values)
 
