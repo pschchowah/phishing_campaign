@@ -83,10 +83,9 @@ class Generator:
             ):
                 return sender_first_name, sender_last_name
 
-    def define_body_prompt(self, campaign_id, reason, link):
+    def define_body_prompt(self, campaign_id, reason, link, sender_first_name, sender_last_name):
         """Generates the email body prompt, including dynamic content."""
         future_date, random_time = self.random_date_and_time()
-        sender_first_name, sender_last_name = self.random_sender()
         click_tracking_url = f"{self.base_url}/events/track_click?email={self.parameters['email']}&campaign_id={campaign_id}"
 
         # Define the email content with placeholders replaced
@@ -115,62 +114,54 @@ class Generator:
         """Generates the body of the phishing email with tracking links and pixel."""
         if not isinstance(campaign_id, int):
             raise ValueError("campaign_id must be an integer")
-
-        body_prompt = self.define_body_prompt(campaign_id, reason, link)
+        
+        sender_first_name, sender_last_name = self.random_sender()
+        body_prompt = self.define_body_prompt(campaign_id, reason, link, sender_first_name, sender_last_name)
         body = self.generate_text(body_prompt)
 
         # Create tracking pixel URL
+        
         tracking_pixel_url = f"{self.base_url}/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
 
         # Create HTML body with a simple tracking pixel image
         body_html = f"""
-            <html>
-                <head>
-                    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-                </head>
-                <body>
-                    {body}
-                    <img src="{tracking_pixel_url}" 
-                        width="1" 
-                        height="1" 
-                        alt="" 
-                        style="display:none">
-                </body>
-                <p> <a href="{self.base_url}/events/track_reported?email={self.parameters['email']}&campaign_id={campaign_id}"> Report phishing </a>  </p>
-            </html>
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            </head>
+            <body>
+                {body}
+            </body>
+            <table style="font-family: Verdana, sans-serif; font-size: 12px; color: #333;">
+            <tr>
+                <td style="width: 150px;">
+                <img src="https://d2csxpduxe849s.cloudfront.net/media/0119B996-98FF-4B56-B4990F6CF9B18964/32BA20B7-EA4B-4F24-88679EB5ABE22D8D/webimage-84F08C5C-051A-454E-B4E40B68607511A5.png" alt="Proximus Logo" style="height: 100px; width: auto;">
+                </td>
+                <td>
+                <strong style="font-size: 14px;">{sender_first_name} {sender_last_name}</strong><br>
+                <span style="font-size: 12px;">{self.parameters['business_unit']}</span><br>
+                <br>
+                <a href="tel:+32123456789" style="color: #0056b3; text-decoration: none;">+32 123 456 789</a><br>
+                <a href="https://www.proximus.com" style="color: #0056b3; text-decoration: none;">www.proximus.com</a>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="padding-top: 10px; font-size: 10px; color: #666;">
+                <hr style="border: none; border-top: 1px solid #ddd;">
+                <p>
+                    This email and any attachments are confidential and intended solely for the use of the intended recipient(s). 
+                    If you are not the intended recipient, you are hereby notified that any use, disclosure, copying, or distribution of 
+                    this email or its contents is strictly prohibited. Please delete this email and any attachments immediately and notify the sender. 
+                    <a style="color: #666;" href="{self.base_url}/events/track_reported?email={self.parameters['email']}&campaign_id={campaign_id}">Report phishing</a>. Please consider the environment before printing this email.
+                </p>
+                </td>
+            </tr>
+            </table>
+        </html>
         """
 
         return body_html, body
     
-    def generate_fake_attachment(self, file_type="pdf", file_size_kb=100):
-        """
-        Generates a fake attachment file with random content.
-
-        Args:
-            file_type (str): The type of the file (e.g., 'pdf', 'docx', 'xlsx').
-            file_size_kb (int): The size of the file in kilobytes.
-
-        Returns:
-            str: The file path of the generated fake attachment.
-        """
-        # Validate the file type
-        valid_file_types = ["pdf", "docx", "xlsx", "txt", "jpg", "png"]
-        if file_type not in valid_file_types:
-            raise ValueError(f"Unsupported file type: {file_type}. Choose from {valid_file_types}.")
-
-        # Generate a random file name
-        file_name = f"attachment_{random.randint(1000, 9999)}.{file_type}"
-        file_path = os.path.join("attachments", file_name)
-
-        # Ensure the directory exists
-        os.makedirs("attachments", exist_ok=True)
-
-        # Generate random content to mimic a real file
-        with open(file_path, "wb") as f:
-            f.write(os.urandom(file_size_kb * 1024))  # Write random binary data
-
-        return file_path
-
     def generate_text(self, prompt):
         """Generates content based on the provided prompt using the model."""
         if not self.model:

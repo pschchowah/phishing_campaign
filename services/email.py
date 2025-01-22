@@ -4,13 +4,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
-import mimetypes
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from services.generate import Generator
+from PIL import Image, ImageDraw, ImageFont
+import io
+
 
 
 class Emailer:
@@ -29,6 +30,14 @@ class Emailer:
         self.token_path = token_path
         self.creds = None
         self.service = None
+        self.parameters = {
+            "name": "John",
+            "surname": "Doe",
+            "email": "john.doe@example.com",
+            "business_unit": "Business Solutions",
+            "team_name": "Operations Team",
+            "language": "French"
+        }
 
         self.authenticate()
 
@@ -56,38 +65,36 @@ class Emailer:
                              credentials=self.creds)
         return self.service
 
-    def create_message(self, sender, to, subject,
-                       message_text, message_html):
+    def create_message(self, sender, to, subject, message_text, message_html, campaign_id):
         """
-        Create a MIME message for an email with both plain-text and HTML content.
+        Create a MIME message for an email with both plain-text and HTML content and a tracked attachment.
 
         :param sender: The email address of the sender.
         :param to: The email address of the receiver.
         :param subject: The subject of the email.
         :param message_text: The plain-text body of the email.
         :param message_html: The HTML body of the email.
+        :param campaign_id: The campaign ID for tracking purposes.
         :return: A dictionary containing the base64-encoded email message.
         """
+        
         # Create a MIMEMultipart message
         message = MIMEMultipart("mixed")
         message["to"] = to
         message["from"] = sender
         message["subject"] = subject
 
-       # Create the alternative part for plain text and HTML
+        # Create the alternative part for plain text and HTML
         alternative_part = MIMEMultipart("alternative")
         alternative_part.attach(MIMEText(message_text, "plain"))
         alternative_part.attach(MIMEText(message_html, "html"))
         message.attach(alternative_part)
 
         # Attach a file if provided
-        gen = Generator()
         attachment_path = "attachments/proximus_training.jpg"
         if os.path.exists(attachment_path):
             file_name = os.path.basename(attachment_path)
-            mime_type, _ = mimetypes.guess_type(attachment_path)
-            mime_type = mime_type or "application/octet-stream"
-            main_type, sub_type = mime_type.split("/", 1)
+            main_type, sub_type = "image", "jpeg"
 
             with open(attachment_path, "rb") as attachment_file:
                 # Create a MIMEBase object and set the payload
@@ -98,17 +105,28 @@ class Emailer:
             encoders.encode_base64(part)
 
             # Add headers for the attachment
-            part.add_header(
-                "Content-Disposition",
-                f'attachment; filename="{file_name}"',
-            )
+            tracking_link = f"http://localhost:8000/events/track_downloaded?email={self.parameters['email']}&campaign_id={campaign_id}"
+            part.add_header("Content-Disposition", f'attachment; filename="{file_name}"')
+            part.add_header("Content-ID", "<attachment_image>")
+            part.add_header("X-Tracking-Link", tracking_link)
 
             # Attach the file to the message
             message.attach(part)
 
+        # Create tracking pixel URL
+        tracking_pixel_url = f"http://localhost:8000/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
+
+        # Update the HTML body to include the tracking pixel
+        tracking_pixel_html = f'<img src="{tracking_pixel_url}" alt="Tracking Pixel" style="display:none;" />'
+        message_html += tracking_pixel_html
+        alternative_part.attach(MIMEText(message_html, "html"))
+
+        print("Attachment and tracking pixel added successfully.")
+
         # Return the raw base64-encoded message
         return {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
+    
     def send_message(self, message):
         """
         Send an email message.

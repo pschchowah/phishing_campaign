@@ -42,6 +42,7 @@ def launch_campaign(
             "team_name": row.get("Proximus Team", ""),
             "language": row["Language"]
         }
+        email.parameters = generator.parameters
 
         # Generate email with campaign tracking
         body_html, body = generator.generate_body_with_tracking(
@@ -54,7 +55,7 @@ def launch_campaign(
 
         sender = "me"
         recipient = row["Email"]
-        message = email.create_message(sender, recipient, subject, body, body_html)
+        message = email.create_message(sender, recipient, subject, body, body_html, campaign_id)
         email.send_message(message)
 
     return {"status": "success", "campaign_id": campaign_id}

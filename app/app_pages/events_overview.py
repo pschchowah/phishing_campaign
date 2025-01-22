@@ -16,7 +16,21 @@ def analytics_display():
     # Fetch data from external endpoint
     api_client = APIClient()
     tracking_data = api_client.get_events()
-    st.dataframe(pd.DataFrame(tracking_data))
+    campaigns_data = api_client.get_campaigns()
+    #employees_data = api_client.get_employees()
 
+    # Create a selectbox for the user to choose which dataframe to display
+    option = st.selectbox(
+        'Select data to display',
+        ('Tracking Data', 'Campaigns Data', 'Employees Data')
+    )
+
+    # Display the selected dataframe
+    if option == 'Tracking Data':
+        st.dataframe(pd.DataFrame(tracking_data))
+    elif option == 'Campaigns Data':
+        st.dataframe(pd.DataFrame(campaigns_data))
+    # elif option == 'Employees Data':
+    #     st.dataframe(pd.DataFrame(employees_data))
 
 analytics_display()

@@ -16,7 +16,6 @@ from api import models, database
 
 gen = Generator()
 
-
 def campaign_launch_form():
     st.title("Campaign Launch")
 
@@ -177,12 +176,12 @@ def campaign_launch_form():
                                 # Apply Filters
                                 # Apply the filter on the DataFrame
                                 launch_campaign(
-                                    campaign_name=campaign_name,
-                                    description=campaign_description or "",
-                                    df=df,
-                                    campaign_id=campaign["id"],
-                                    reason=fake_reason,
-                                    link=fake_link,
+                                    campaign_name,
+                                    campaign_description or "",
+                                    df,
+                                    campaign["id"],
+                                    fake_reason,
+                                    fake_link
                                 )
 
                         st.success(f"Campaign '{campaign_name}' launched successfully!")
@@ -194,6 +193,5 @@ def campaign_launch_form():
             st.error(f"Error processing CSV file: {str(e)}")
     else:
         st.info("Please upload a CSV file containing the target list")
-
 
 campaign_launch_form()
