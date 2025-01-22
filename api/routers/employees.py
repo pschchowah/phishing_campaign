@@ -18,6 +18,7 @@ class EmployeeResponse(BaseModel):
 
 
 class EmployeeCreate(BaseModel):
+    
     email: EmailStr
     first_name: str
     last_name: str
