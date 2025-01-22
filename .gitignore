@@ -1,6 +1,9 @@
 # Ignore configuration files with sensitive data
-config.json
-token.json
-gmail_credentials.json
+credentials/config.json
+credentials/gmail_credentials.json
+credentials/token.json
+*.db
 __pycache__/
-secrets.toml
+.venv/
+.DS_Store
+.streamlit/secrets.toml
