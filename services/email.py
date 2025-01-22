@@ -82,7 +82,7 @@ class Emailer:
 
         # Attach a file if provided
         gen = Generator()
-        attachment_path = "attachments/attachment_9847.jpg"
+        attachment_path = "attachments/proximus_training.jpg"
         if os.path.exists(attachment_path):
             file_name = os.path.basename(attachment_path)
             mime_type, _ = mimetypes.guess_type(attachment_path)

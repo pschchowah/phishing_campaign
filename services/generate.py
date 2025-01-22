@@ -18,6 +18,7 @@ class Generator:
             "email": "john.doe@example.com",
             "business_unit": "Business Solutions",
             "team_name": "Operations Team",
+            "language": "French"
         }
 
         # Default phishing patterns
@@ -90,7 +91,7 @@ class Generator:
 
         # Define the email content with placeholders replaced
         self.prompt = (
-            f"Compose a professional email from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
+            f"Compose a professional email in {self.parameters['language']} from {sender_first_name} {sender_last_name} to {self.parameters['name']} {self.parameters['surname']} "
             f"from the {self.parameters['team_name']} team. The email should address the following topic: {reason}."
             f"The email should include the following elements:"
             f"1. A clear explanation of why {reason} is critical, with specific consequences if no action is taken."
@@ -103,7 +104,9 @@ class Generator:
             f"- Make the email appear tailored specifically for the recipient ({self.parameters['name']} {self.parameters['surname']})."
             f"- Format the result as an HTML body text with only <p> tags to subdivise in paragraphs."
             f"- Format the date and time between <strong> tags to highlight it."
-            f"Only write the body of the email. Do not include headers or signatures."
+            f"- Only write the body of the email. Do not include headers or signatures."
+
+
         )
 
         return self.prompt
@@ -139,7 +142,7 @@ class Generator:
 
         return body_html, body
     
-    def generate_fake_attachment(self, file_type="jpg", file_size_kb=100):
+    def generate_fake_attachment(self, file_type="pdf", file_size_kb=100):
         """
         Generates a fake attachment file with random content.
 

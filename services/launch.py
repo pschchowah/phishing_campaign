@@ -3,7 +3,6 @@ from services.generate import Generator
 from services.email import Emailer
 import pandas as pd
 import time
-import streamlit as st
 
 
 def launch_campaign(
@@ -36,6 +35,7 @@ def launch_campaign(
             "email": row["Email"],
             "business_unit": row.get("Proximus Business Unit", ""),
             "team_name": row.get("Proximus Team", ""),
+            "language": row["Language"]
         }
 
         # Generate email with campaign tracking
