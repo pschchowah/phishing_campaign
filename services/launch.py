@@ -6,7 +6,12 @@ import time
 
 
 def launch_campaign(
-    campaign_name: str, description: str, df: pd.DataFrame, campaign_id: int, reason, link
+    campaign_name: str,
+    description: str,
+    df: pd.DataFrame,
+    campaign_id: int,
+    reason,
+    link,
 ):
     """
     Launches a phishing campaign with the given parameters and target list.
@@ -24,7 +29,7 @@ def launch_campaign(
 
     # Send emails
     for _, row in df.iterrows():
-        time.sleep(5)
+        time.sleep(7)
 
         receiver_name = row["First Name"]
         receiver_surname = row["Last Name"]
@@ -39,7 +44,9 @@ def launch_campaign(
         }
 
         # Generate email with campaign tracking
-        body_html, body = generator.generate_body_with_tracking(campaign_id, reason, link)
+        body_html, body = generator.generate_body_with_tracking(
+            campaign_id, reason, link
+        )
 
         subject = generator.generate_text(
             f"Write the subject for this email in 5 words with 'Proximus -' at the beginning : {body}"
