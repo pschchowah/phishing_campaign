@@ -8,7 +8,7 @@ class Generator:
     def __init__(
         self,
         model=None,
-        csv_file="data/dummy-emails - Sheet1.csv",
+        csv_file="data/dummy-emails - language test.csv",
         base_url="http://localhost:8000",
     ):
         # Default parameters for the receiver

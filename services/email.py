@@ -9,9 +9,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from PIL import Image, ImageDraw, ImageFont
-import io
-
+from services.generate import Generator
 
 
 class Emailer:
@@ -30,14 +28,6 @@ class Emailer:
         self.token_path = token_path
         self.creds = None
         self.service = None
-        self.parameters = {
-            "name": "John",
-            "surname": "Doe",
-            "email": "john.doe@example.com",
-            "business_unit": "Business Solutions",
-            "team_name": "Operations Team",
-            "language": "French"
-        }
 
         self.authenticate()
 
@@ -91,10 +81,10 @@ class Emailer:
         message.attach(alternative_part)
 
         # Attach a file if provided
-        attachment_path = "attachments/proximus_training.jpg"
+        attachment_path = "attachments/training.pdf"
         if os.path.exists(attachment_path):
             file_name = os.path.basename(attachment_path)
-            main_type, sub_type = "image", "jpeg"
+            main_type, sub_type = "application", "pdf"
 
             with open(attachment_path, "rb") as attachment_file:
                 # Create a MIMEBase object and set the payload
@@ -107,7 +97,7 @@ class Emailer:
             # Add headers for the attachment
             tracking_link = f"http://localhost:8000/events/track_downloaded?email={self.parameters['email']}&campaign_id={campaign_id}"
             part.add_header("Content-Disposition", f'attachment; filename="{file_name}"')
-            part.add_header("Content-ID", "<attachment_image>")
+            part.add_header("Content-ID", "<attachment_pdf>")
             part.add_header("X-Tracking-Link", tracking_link)
 
             # Attach the file to the message
@@ -116,9 +106,10 @@ class Emailer:
         # Create tracking pixel URL
         tracking_pixel_url = f"http://localhost:8000/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
 
-        # Update the HTML body to include the tracking pixel
+        # Update the HTML body to include the tracking pixel and the attachment link
         tracking_pixel_html = f'<img src="{tracking_pixel_url}" alt="Tracking Pixel" style="display:none;" />'
-        message_html += tracking_pixel_html
+        attachment_link_html = f'<a href="cid:attachment_pdf" download="{file_name}">Download Attachment</a>'
+        message_html += tracking_pixel_html + attachment_link_html
         alternative_part.attach(MIMEText(message_html, "html"))
 
         print("Attachment and tracking pixel added successfully.")
@@ -126,7 +117,6 @@ class Emailer:
         # Return the raw base64-encoded message
         return {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}
 
-    
     def send_message(self, message):
         """
         Send an email message.
