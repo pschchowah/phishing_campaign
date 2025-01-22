@@ -76,14 +76,15 @@ def track_click(
     db.refresh(event)
     # return fake submission html form to log a submitted event
     return templates.TemplateResponse(
-        "submission.html", {"request": request, "campaign_id": campaign_id}
+        "submission.html",
+        {"request": request, "campaign_id": campaign_id, "employee_email": email},
     )
 
 
 @router.post("/track_submitted")
 async def track_submitted(request: Request, db: Session = Depends(database.get_db)):
     form = await request.form()
-    email = form.get("email")
+    email = form.get("employee_email")
     campaign_id = form.get("campaign_id")
     print(email)
     # Create SUBMITTED event
@@ -97,9 +98,7 @@ async def track_submitted(request: Request, db: Session = Depends(database.get_d
     db.commit()
     db.refresh(event)
 
-    return templates.TemplateResponse(
-        "phished.html", {"request": request}
-    )
+    return templates.TemplateResponse("phished.html", {"request": request})
 
 
 @router.get("/track_reported")
