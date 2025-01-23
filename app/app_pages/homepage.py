@@ -11,10 +11,9 @@ sys.path.append(str(root_dir))
 from services.launch import launch_campaign
 from api_client import APIClient
 from services.generate import Generator
-from api.database import SessionLocal
-from api import models, database
 
 gen = Generator()
+
 
 def campaign_launch_form():
     st.title("Campaign Launch")
@@ -124,12 +123,14 @@ def campaign_launch_form():
                                 description=campaign_description or "",
                                 target_count=target_count,
                             )
-                            
+
                             # Fetch the list of employees from the API
                             employees = api_client.get_employees()
 
                             # Extract email addresses from the JSON response
-                            employee_emails = {employee["email"] for employee in employees}
+                            employee_emails = {
+                                employee["email"] for employee in employees
+                            }
 
                             # Initialize a counter for the number of employees added
                             employees_added_count = 0
@@ -142,7 +143,9 @@ def campaign_launch_form():
                                         "first_name": row["First Name"],
                                         "last_name": row["Last Name"],
                                         "email": row["Email"],
-                                        "business_unit": row.get("Proximus Business Unit", ""),
+                                        "business_unit": row.get(
+                                            "Proximus Business Unit", ""
+                                        ),
                                         "team_name": row.get("Proximus Team", ""),
                                         "score": 0,
                                     }
@@ -151,7 +154,9 @@ def campaign_launch_form():
                                     employees_added_count += 1
 
                             # Display the number of employees added
-                            st.success(f"Count of new employees: {employees_added_count}")
+                            st.success(
+                                f"Count of new employees: {employees_added_count}"
+                            )
 
                             # Then launch the emails using the service
                             with st.spinner("Sending emails..."):
@@ -163,7 +168,7 @@ def campaign_launch_form():
                                     df,
                                     campaign["id"],
                                     fake_reason,
-                                    fake_link
+                                    fake_link,
                                 )
 
                         st.success(f"Campaign '{campaign_name}' launched successfully!")
@@ -175,5 +180,6 @@ def campaign_launch_form():
             st.error(f"Error processing CSV file: {str(e)}")
     else:
         st.info("Please upload a CSV file containing the target list")
+
 
 campaign_launch_form()
