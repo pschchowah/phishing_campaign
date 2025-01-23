@@ -14,7 +14,7 @@
     padding-bottom: 20px;
 }
 
-/* Buttons */
+/* Buttons: login/logout/browse */
 div.stButton > button, .st-emotion-cache-ocsh0s:active, .st-emotion-cache-ocsh0s:focus, .st-emotion-cache-ocsh0s:focus:not(:active) {
     background-color: #754db8;
     color: white;
@@ -28,7 +28,7 @@ div.stButton > button:hover, .st-emotion-cache-ocsh0s:hover {
     border-color: #5C2D91;
 }
 
-/* Multiselect */
+/* Select options */
 .st-dm {
     background-color: #754db8;
 }
@@ -37,4 +37,36 @@ div.stButton > button:hover, .st-emotion-cache-ocsh0s:hover {
 .st-emotion-cache-151ebwt:hover {
     border-color: #754db8;
     color: #754db8;
+}
+.st-emotion-cache-1mw54nq {
+    border-color: #5C2D91;
+    color: #5C2D91;
+}
+
+.st-emotion-cache-1pvqlk0:hover {
+    background-color: #F0F2F6;
+    border-color: #5C2D91;
+}
+
+.st-emotion-cache-1pvqlk0 {
+    background: #dccbf9;
+    border: 1px solid #5C2D91;
+}
+
+/* fields border */
+.st-cc {
+    border-bottom-color: #754db8;
+}
+
+.st-cb {
+    border-top-color: #754db8;
+}
+
+.st-ca {
+    border-right-color: #754db8;
+ 
+}
+
+.st-c9 {
+    border-left-color: #754db8;
 }
