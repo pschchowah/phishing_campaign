@@ -12,7 +12,7 @@ if "authenticated" not in st.session_state:
 
 
 def login_page():
-    col1, col2, col3 = st.columns([1,3,1])
+    col1, col2, col3 = st.columns([1, 3, 1])
     with col2:
         st.title("Phishing Campaign Manager")
         username = st.text_input("Username")
@@ -42,8 +42,8 @@ else:
     navigation = st.navigation(
         [
             st.Page("app_pages/homepage.py", title="Campaign Launch"),
-            st.Page("app_pages/events_overview.py", title="Data Overview"),
-            st.Page("app_pages/email_dashboard.py", title="Email Dashboard"),
+            st.Page("app_pages/data_overview.py", title="Data Overview"),
+            st.Page("app_pages/campaign_metrics.py", title="Campaign Metrics"),
         ]
     )
     navigation.run()
