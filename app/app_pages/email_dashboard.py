@@ -1,72 +1,79 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from sqlalchemy import create_engine
+import sys
+import datetime
+from pathlib import Path
 
-# Test dataframe
-data = {
-    "campaign id": [1, 2, 3, 4, 5],
-    "campaign name": [
-        "Webinar Email",
-        "Password Reset Email",
-        "Service Upgrade Email 1",
-        "Account Verification Email",
-        "Service Upgrade Email 2",
-    ],
-    "subject": [
-        "webinar",
-        "password reset",
-        "service upgrade",
-        "account verification",
-        "service upgrade",
-    ],
-    "sent date": ["12/01", "14/02", "10/03", "13/04", "17/05"],
-    "year": [2024, 2025, 2025, 2025, 2025],
-    "month": ["January", "Februari", "March", "April", "May"],
-    "number of sent emails": [200, 200, 200, 200, 200],
-    "number of delivered emails": [199, 200, 198, 199, 200],
-    "number of opens": [34, 54, 23, 32, 21],
-    "number of clicks": [16, 5, 23, 12, 3],
-}
+root_dir = Path(__file__).parent.parent
+sys.path.append(str(root_dir))
+from api_client import APIClient
 
-# Create DataFrame
-df = pd.DataFrame(data)
+# Event dataframe
+def dataframe_creation():
+    # Fetch data from external endpoint
+    api_client = APIClient()
+    tracking_data = api_client.get_events()
+    return pd.DataFrame(tracking_data)
 
+events_df = dataframe_creation()
 
-# functions
-def pie_chart(label, data):
+all_event_types = ["open", "click", "submitted", "downloaded_attachement","reported"]
+event_counts = events_df.groupby(["campaign_id", "event_type"]).size().unstack(fill_value=0)
+
+for event in all_event_types:
+    if event not in event_counts.columns:
+        event_counts[event] = 0
+
+# Establish a connection with the database
+engine = create_engine("sqlite:///./phishing_campaigns.db")
+ 
+# Read the sqlite table
+campaigns_df = pd.read_sql_table(
+    "campaigns",
+    con=engine
+)
+ 
+# Create final dataFrame
+merged_df = pd.merge(campaigns_df, event_counts, left_on="id", right_on="campaign_id", how="left")
+merged_df = merged_df.fillna(0)
+
+# Pie charts
+def pie_chart(data):
+    st.markdown(f"### {data}%")
+    percentage = [data, 100 - data]
     colors = ["#7d57a7", "#e6e6e7"]
-    # fig1, ax1 = plt.subplots()
-    plt.pie(data, colors=colors, labels=label, autopct="%1.1f%%", startangle=90)
-    # draw circle
+    plt.pie(percentage, colors=colors, startangle=90)
     centre_circle = plt.Circle((0, 0), 0.70, fc="white")
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
-    # Equal aspect ratio ensures that pie is drawn as a circle
     plt.axis("equal")
     plt.tight_layout()
     st.pyplot(fig, use_container_width=True)
     plt.clf()
 
-
 def calculate_click_rate(
-    campaign_clicks, campaign_opens, campaign_delievered, campaign_sent
+    campaign_clicks, campaign_opens, campaign_sent, campaign_submitted, campaign_reports, campaign_download
 ):
-    click_rate = campaign_clicks / campaign_sent * 100
-    open_rate = campaign_opens / campaign_sent * 100
-    click_open = campaign_clicks / campaign_opens * 100
-    delivered_rate = campaign_delievered / campaign_sent * 100
-    return open_rate, click_rate, click_open, delivered_rate
+    click_rate = round(campaign_clicks / campaign_sent * 100, 2)
+    open_rate = round(campaign_opens / campaign_sent * 100, 2)
+    data_submitted = round(campaign_submitted / campaign_sent * 100, 2)
+    reports = round(campaign_reports / campaign_sent * 100, 2)
+    downloads = round(campaign_download / campaign_sent * 100, 2)
+    return open_rate, click_rate, data_submitted, reports, downloads
 
+def graphs(df):
+    # Time data
+    df['created_at'] = pd.to_datetime(df['created_at'])
+    df['month'] = df['created_at'].dt.strftime('%B')
+    df['year'] = df['created_at'].dt.year
+    df['day'] = df['created_at'].dt.day
 
-# sidebar
-with st.sidebar:
-    st.title("Phishing Email Dashboard")
-    on = st.toggle("Per campaign", value=False)
-
-    if on:
-        selected_campaign = st.selectbox("Select a campaign", df["campaign name"])
-        df = df[df["campaign name"] == selected_campaign]
-    else:
+    # Sidebar
+    with st.sidebar:
+        st.title("Phishing Email Dashboard")
+        on = st.toggle("Per campaign", value=False)
         unique_years = df["year"].unique()
         years = st.segmented_control("Which year", options=unique_years)
         if years == None:
@@ -79,85 +86,126 @@ with st.sidebar:
                 df = df
             else:
                 df = df[df["month"].isin(selected_month)]
+        if on:
+            unique_campaign = df["name"].unique()
+            selected_campaign = st.selectbox("Select a campaign", unique_campaign)
+            df = df[df["name"] == selected_campaign]
+            
 
-emails_sent_df = df["number of sent emails"].sum()
-emails_delivered_df = df["number of delivered emails"].sum()
-emails_open_df = df["number of opens"].sum()
-emails_click_df = df["number of clicks"].sum()
-
-open_rate_df, click_rate_df, click_open_df, delivered_rate_df = calculate_click_rate(
-    emails_click_df, emails_open_df, emails_delivered_df, emails_sent_df
-)
-
-if on:
-    st.title("Campaign details: {selected_campaign}")
-else:
-    st.title("General overview")
-
-# general data
-per1, per2, per3, per4 = st.columns(4)
-
-with per1:
-    st.subheader("Open rate")
-    # Pie chart
-    labels_clicks = ["Clicked", "No clicks"]
-    percentage_open = [open_rate_df, 100 - open_rate_df]
-    pie_chart(labels_clicks, percentage_open)
-
-with per2:
-    st.subheader("Click rate")
-    # Pie chart
-    labels_clicks = ["Clicked", "No clicks"]
-    percentage_clicks = [click_rate_df, 100 - click_rate_df]
-    pie_chart(labels_clicks, percentage_clicks)
-
-with per3:
-    st.subheader("Click to open")
-    # Pie chart
-    labels_clicks = ["Clicked", "No clicks"]
-    percentage_click_open = [click_open_df, 100 - click_open_df]
-    pie_chart(labels_clicks, percentage_click_open)
-
-with per4:
-    st.subheader("Delivered")
-    # Pie chart
-    labels_clicks = ["Clicked", "No clicks"]
-    percentage_delivered = [delivered_rate_df, 100 - delivered_rate_df]
-    pie_chart(labels_clicks, percentage_delivered)
+    # COMMENT AVOIR LES SENT
+    # emails_sent_df = df["sent"].sum() # HOW ????
+    emails_sent = df['target_count'].sum()
+    emails_open = df['open'].sum()
+    emails_click = df['click'].sum()
+    emails_submitted = df['submitted'].sum()  
+    emails_reported = df['reported'].sum()
+    emails_pdf = df['downloaded_attachement'].sum() 
 
 
-# columns charts
-fig1, fig2 = st.columns(2)
-with fig1:
-    st.markdown("### Campaign details")
+    open_rate, click_rate, data_submitted, nb_reports, emails_download = calculate_click_rate(
+        emails_click, emails_open, emails_sent, emails_submitted, emails_reported, emails_pdf
+    )
 
-    # Données pour le graphique
-    categories = ["Sent", "Open", "Click"]
-    values = [emails_sent_df, emails_open_df, emails_click_df]
+    # Overview
+    if on:
+        st.title(f"Campaign details: {selected_campaign}")
+    else:
+        st.title("General overview")
 
-    # Création du graphique à barres
-    fig, ax = plt.subplots()
-    ax.bar(categories, values, color=["#5C2D91", "#7d57a7", "#DE2A56"])
+    # Pie charts
+    col1,col2,col3,col4 = st.columns(4)
 
-    # Ajout des labels et titre
-    ax.set_ylabel("Number of Emails")
-    # ax.set_title(f'Performance of {selected_campaign}')
+    with col1:
+        st.markdown("#### Open rate")
+        pie_chart(open_rate)
 
-    # Affichage du graphique dans Streamlit
-    st.pyplot(fig)
+    with col2:
+        st.markdown("#### Click rate")
+        pie_chart(click_rate)
 
-plt.clf()
+    with col3:
+        st.markdown("#### Data submitted")
+        pie_chart(data_submitted)
 
-with fig2:
-    st.markdown("### Percentage of clicks per business units")
-    business_units = ["Proximus", "Proximus Billing Service", "Proximus Ada"]
-    percentage_clicking = [14, 17, 7]
-    plt.bar(business_units, percentage_clicking, color="#7d57a7")
-    plt.xlabel("Business units")
-    plt.ylabel("Percentage of clicking")
-    st.pyplot(plt)
+    with col4:
+        st.markdown("#### Downloads")
+        pie_chart(emails_download)
+    
+    # Bar charts
+    if on:
+        st.markdown("### Campaign details")
+        categories = ["Sent", "Opens", "Click", "PDF downloads", "Data submitted", "Reported"]
+        values = [emails_sent, emails_open, emails_click, emails_pdf, emails_submitted, emails_reported]
+        fig, ax = plt.subplots()
+        ax.bar(categories, values, color=["#5C2D91", "#7d57a7", "#DE2A56"])
+        ax.set_ylabel("Number of Emails")
+        st.pyplot(fig)
+    else:
+        st.markdown("### Overview of the lasts campaigns")
+        if years == None:
+            current_date = datetime.datetime.now()  
+            one_year_ago = current_date - pd.DateOffset(months=12) 
+            df = df[df['created_at'] >= one_year_ago]
+        else:
+            df = df[df["year"] == years]
+        
+        fig, ax = plt.subplots(figsize=(10, 6)) 
+        ax.plot(df['created_at'], df['click'], label="Clicks", color="#7d57a7", marker='o')
+        ax.plot(df['created_at'], df['open'], label="Opens", color="#5C2D91", marker='o')
+        ax.plot(df['created_at'], df['reported'], label="Reports", color="#DE2A56", marker='o')
+        ax.plot(df['created_at'], df['submitted'], label="Submitted", color="#28A745", marker='o')
+        ax.plot(df['created_at'], df['downloaded_attachement'], label="Downloads", color="#28A745", marker='o')
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Number of events")
+        ax.set_title("Evolution over time")
+        ax.legend()
+        st.pyplot(fig)
 
+    plt.clf()
 
-# dataframe view
-st.markdown("### Detailed Data View")
-st.dataframe(df)
+# #         # RAJOUTER reports & data submitted
+# #         st.markdown("### Overview per business units")
+# #         # business_units = ["Proximus", "Proximus Billing Service", "Proximus Ada"]
+# #         # percentage_clicking = [14, 17, 7]
+# #         # plt.bar(business_units, percentage_clicking, color="#7d57a7")
+# #         # plt.xlabel("Business units")
+# #         # plt.ylabel("Percentage of clicking")
+# #         # st.pyplot(plt)
+# #         business_units = ["Proximus", "Proximus Billing Service", "Proximus Ada"]
+# #         percentage_clicking = [14, 17, 7]  # Pourcentage de clics
+# #         percentage_submitted = [9, 12, 5]  # Pourcentage de soumissions
+# #         percentage_reports = [3, 4, 1]    # Pourcentage de signalements
+
+# #         # Création du graphique
+# #         fig, ax = plt.subplots()
+
+# #         # Tracer les barres pour chaque catégorie
+# #         bar_width = 0.25
+# #         index = range(len(business_units))
+
+# #         # Barres pour les clics, soumissions et signalements
+# #         ax.bar(index, percentage_clicking, bar_width, label="Click rate", color="#7d57a7")
+# #         ax.bar([i + bar_width for i in index], percentage_submitted, bar_width, label="Submitted rate", color="#5C2D91")
+# #         ax.bar([i + bar_width * 2 for i in index], percentage_reports, bar_width, label="Report rate", color="#DE2A56")
+
+# #         # Ajouter des labels et un titre
+# #         ax.set_xlabel("Business units")
+# #         ax.set_ylabel("Percentage (%)")
+# #         # ax.set_title("Comparison of Clicks, Submitted, and Reports by Business Unit")
+# #         ax.set_xticks([i + bar_width for i in index])  # Positionner les étiquettes au centre des groupes de barres
+# #         ax.set_xticklabels(business_units)
+# #         ax.legend()
+
+# #         # Affichage du graphique avec Streamlit
+# #         st.pyplot(fig)
+
+    # dataframe view
+    if on:
+        st.markdown(f"### Detailed data view - {selected_campaign}")
+    else:
+        st.markdown("### Detailed data view - last 20 campaigns")
+    short_df = df.drop(['status', 'month', 'year', 'day'], axis=1)
+    short_df.sort_values(by='created_at', ascending = False, inplace = True) 
+    st.dataframe(short_df.head(20))
+
+graphs(merged_df)

@@ -1,0 +1,40 @@
+/* Titles */
+.st-emotion-cache-1lvxfs7 h1, .st-emotion-cache-1lvxfs7 h2, .st-emotion-cache-1lvxfs7 h3 {
+    color: #5C2D91;
+}
+
+/* Wider layout */
+.st-emotion-cache-yw8pof {
+    max-width: 60rem;
+}
+
+/* Pie charts section */
+.st-emotion-cache-ocqkz7 {
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* Buttons */
+div.stButton > button, .st-emotion-cache-ocsh0s:active, .st-emotion-cache-ocsh0s:focus, .st-emotion-cache-ocsh0s:focus:not(:active) {
+    background-color: #754db8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5em 1em;
+}
+div.stButton > button:hover, .st-emotion-cache-ocsh0s:hover {
+    background-color: #5C2D91; 
+    color: white;
+    border-color: #5C2D91;
+}
+
+/* Multiselect */
+.st-dm {
+    background-color: #754db8;
+}
+
+/* Year selection - dashboard */
+.st-emotion-cache-151ebwt:hover {
+    border-color: #754db8;
+    color: #754db8;
+}
