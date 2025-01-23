@@ -95,7 +95,7 @@ class Emailer:
             encoders.encode_base64(part)
 
             # Add headers for the attachment
-            tracking_link = f"http://localhost:8000/events/track_downloaded?email={self.parameters['email']}&campaign_id={campaign_id}"
+            tracking_link = f"https://data-tracking-overview.onrender.com/events/track_downloaded?email={self.parameters['email']}&campaign_id={campaign_id}"
             part.add_header("Content-Disposition", f'attachment; filename="{file_name}"')
             part.add_header("Content-ID", "<attachment_pdf>")
             part.add_header("X-Tracking-Link", tracking_link)
@@ -104,7 +104,7 @@ class Emailer:
             message.attach(part)
 
         # Create tracking pixel URL
-        tracking_pixel_url = f"http://localhost:8000/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
+        tracking_pixel_url = f"https://data-tracking-overview.onrender.com/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
 
         # Update the HTML body to include the tracking pixel and the attachment link
         tracking_pixel_html = f'<img src="{tracking_pixel_url}" alt="Tracking Pixel" style="display:none;" />'

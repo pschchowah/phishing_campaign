@@ -9,7 +9,7 @@ class Generator:
         self,
         model=None,
         csv_file="data/dummy-emails - language test.csv",
-        base_url="http://localhost:8000",
+        base_url="https://data-tracking-overview.onrender.com",
     ):
         # Default parameters for the receiver
         self.parameters = {

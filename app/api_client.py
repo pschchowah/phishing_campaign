@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Any
 
 
 class APIClient:
-    def __init__(self, base_url: str = "http://localhost:8000"):
+    def __init__(self, base_url: str = "https://data-tracking-overview.onrender.com"):
         self.base_url = base_url
 
     def get_events(self, campaign_id: Optional[int] = None,employee_id: Optional[int] = None) -> List[Dict]:

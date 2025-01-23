@@ -7,7 +7,7 @@ root_dir = Path(__file__).parent.parent.parent
 sys.path.append(str(root_dir))
 
 # Fetch data from external endpoint
-@st.cache_data
+
 def fetch_data():
     api_client = APIClient()
     tracking_data = api_client.get_events()
@@ -30,11 +30,11 @@ def analytics_display():
 
     # Display the selected dataframe
     if option == 'Tracking Data':
-        st.dataframe(tracking_data)
+        st.dataframe(tracking_data, use_container_width=True)
     elif option == 'Campaigns Data':
-        st.dataframe(campaigns_data)
+        st.dataframe(campaigns_data, use_container_width=True)
     elif option == 'Employees Data':
-        st.dataframe(employees_data)
+        st.dataframe(employees_data, use_container_width=True)
 
 # Call the function to display analytics
 analytics_display()

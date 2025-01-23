@@ -54,5 +54,5 @@ def create_employee(employee: EmployeeCreate, db: Session = Depends(database.get
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/", response_model=List[EmployeeResponse])
-def get_campaigns(db: Session = Depends(database.get_db)):
+def get_employees(db: Session = Depends(database.get_db)):
     return db.query(models.Employee).all()
