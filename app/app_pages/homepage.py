@@ -124,52 +124,34 @@ def campaign_launch_form():
                                 description=campaign_description or "",
                                 target_count=target_count,
                             )
-                            # Process CSV and add employees to the database
-                            db = SessionLocal()
-                            # Initialize counter
-                            added_count = 0
+                            
+                            # Fetch the list of employees from the API
+                            employees = api_client.get_employees()
 
-                            # Iterate through CSV
-                            try:
-                                for _, row in df.iterrows():
-                                    email = row["Email"]
-                                    # Check if the employee exists in the database
-                                    existing_employee = (
-                                        db.query(models.Employee)
-                                        .filter(models.Employee.email == email)
-                                        .first()
-                                    )
+                            # Extract email addresses from the JSON response
+                            employee_emails = {employee["email"] for employee in employees}
 
-                                    if not existing_employee:
-                                        try:
-                                            employee_data = {
-                                                "first_name": row["First Name"],
-                                                "last_name": row["Last Name"],
-                                                "email": row["Email"],
-                                                "business_unit": row.get(
-                                                    "Proximus Business Unit", ""
-                                                ),
-                                                "team_name": row.get(
-                                                    "Proximus Team", ""
-                                                ),
-                                                "score": 0,
-                                            }
-                                            # Add new employee via API
-                                            api_client.add_employee(employee_data)
-                                            added_count += 1
-                                        except Exception as e:
-                                            st.error(
-                                                f"Failed to add employee {email}: {str(e)}"
-                                            )
+                            # Initialize a counter for the number of employees added
+                            employees_added_count = 0
 
-                                if added_count > 0:
-                                    st.success(
-                                        f"{added_count} new employees added successfully."
-                                    )
+                            for _, row in df.iterrows():
+                                if row["Email"] in employee_emails:
+                                    continue
                                 else:
-                                    st.info("No new employees were added.")
-                            except Exception as e:
-                                st.error(f"Error processing CSV: {str(e)}")
+                                    employee_data = {
+                                        "first_name": row["First Name"],
+                                        "last_name": row["Last Name"],
+                                        "email": row["Email"],
+                                        "business_unit": row.get("Proximus Business Unit", ""),
+                                        "team_name": row.get("Proximus Team", ""),
+                                        "score": 0,
+                                    }
+                                    # Add new employee via API
+                                    api_client.add_employee(employee_data)
+                                    employees_added_count += 1
+
+                            # Display the number of employees added
+                            st.success(f"Count of new employees: {employees_added_count}")
 
                             # Then launch the emails using the service
                             with st.spinner("Sending emails..."):
