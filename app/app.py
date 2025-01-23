@@ -1,5 +1,11 @@
 import streamlit as st
 
+st.logo("app/phish_clicks_logo/png/phish-n-clicks-logo-hori-purple.png", size="large")
+# Loading CSS style
+st.markdown(
+    "<style>" + open("app/style.css").read() + "</style>", unsafe_allow_html=True
+)
+
 # Initialize authentication state
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
