@@ -148,7 +148,7 @@ def graphs(df, events):
         plt.rcParams.update({'font.size': 8})
         categories = ["Sent", "Opened", "Clicked", "PDF downloads", "Data submitted", "Reported"]
         values = [emails_sent, emails_open, emails_click, emails_pdf, emails_submitted, emails_reported]
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(10, 4))
         ax.bar(categories, values, color=["#5C2D91", "#754db8", "#AD96C8", "#DE2A56", "#6F142B", "#C0C1C4"])
         plt.xticks(rotation=45)
         ax.set_ylabel("How many people", fontsize=10)
@@ -170,7 +170,7 @@ def graphs(df, events):
         x_labels = df_last_10['created_at']  
         x_index = range(len(df_last_10)) 
 
-        fig, ax = plt.subplots(figsize=(10, 6)) 
+        fig, ax = plt.subplots(figsize=(10, 4)) 
         ax.plot(x_index, df_last_10['open'], label="Opens", color="#5C2D91", marker='o')
         ax.plot(x_index, df_last_10['click'], label="Clicks", color="#AD96C8", marker='o')
         ax.plot(x_index, df_last_10['submitted'], label="Data submitted", color="#DE2A56", marker='o')
