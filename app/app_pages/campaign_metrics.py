@@ -165,15 +165,21 @@ def graphs(df, events):
             st.markdown(f"### Overview of the campaigns in {years}")
             df = df[df["year"] == years]
         
-        df_last_10 = df.tail(20)
+        df_last_10 = df.tail(10)
+
+        x_labels = df_last_10['created_at']  
+        x_index = range(len(df_last_10)) 
+
         fig, ax = plt.subplots(figsize=(10, 6)) 
-        ax.plot(df_last_10['date'], df_last_10['open'], label="Opens", color="#5C2D91", marker='o')
-        ax.plot(df_last_10['date'], df_last_10['click'], label="Clicks", color="#AD96C8", marker='o')
-        ax.plot(df_last_10['date'], df_last_10['submitted'], label="Data submitted", color="#DE2A56", marker='o')
-        ax.plot(df_last_10['date'], df_last_10['downloaded_attachement'], label="PDF downloads", color="#6F142B", marker='o')
-        ax.plot(df_last_10['date'], df_last_10['reported'], label="Reports", color="#C0C1C4", marker='o')
+        ax.plot(x_index, df_last_10['open'], label="Opens", color="#5C2D91", marker='o')
+        ax.plot(x_index, df_last_10['click'], label="Clicks", color="#AD96C8", marker='o')
+        ax.plot(x_index, df_last_10['submitted'], label="Data submitted", color="#DE2A56", marker='o')
+        ax.plot(x_index, df_last_10['downloaded_attachement'], label="PDF downloads", color="#6F142B", marker='o')
+        ax.plot(x_index, df_last_10['reported'], label="Reports", color="#C0C1C4", marker='o')
         ax.set_ylabel("Number of events")
         ax.legend()
+        ax.set_xticks(x_index)
+        ax.set_xticklabels(x_labels, rotation=45)
         st.pyplot(fig)
 
     plt.clf()
