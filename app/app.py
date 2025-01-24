@@ -1,5 +1,11 @@
 import streamlit as st
 
+st.set_page_config(
+    layout="wide",
+    page_title="Phish&Clicks",
+    page_icon=":fish:"
+)
+
 st.logo("app/phish_clicks_logo/png/phish-n-clicks-logo-hori-purple.png", size="large")
 # Loading CSS style
 st.markdown(
@@ -12,7 +18,7 @@ if "authenticated" not in st.session_state:
 
 
 def login_page():
-    col1, col2, col3 = st.columns([1, 3, 1])
+    col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
         st.title("Phishing Campaign Manager")
         username = st.text_input("Username")
