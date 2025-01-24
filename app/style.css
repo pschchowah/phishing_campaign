@@ -47,3 +47,18 @@ div.stButton > button:hover, .st-emotion-cache-ocsh0s:hover {
     background: #dccbf9;
     border: 1px solid #5C2D91;
 }
+
+/* form */
+div.st-emotion-cache-abycrm div.st-ef [role="button"]:not(:disabled) {
+    background-color: #5C2D91;
+}
+
+
+/* box borders */
+
+.st-cc, .st-cb, .st-ca, .st-c9  {
+    border-bottom-color:#5C2D91;
+    border-top-color:#5C2D91;
+    border-right-color:#5C2D91;
+    border-left-color:#5C2D91;
+}
