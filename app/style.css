@@ -28,11 +28,6 @@ div.stButton > button:hover, .st-emotion-cache-ocsh0s:hover {
     border-color: #5C2D91;
 }
 
-/* Select options */
-/* .st-dm {
-    background-color: #754db8;
-} */
-
 /* Year selection - dashboard */
 .st-emotion-cache-151ebwt:hover {
     border-color: #754db8;
@@ -51,22 +46,4 @@ div.stButton > button:hover, .st-emotion-cache-ocsh0s:hover {
 .st-emotion-cache-1pvqlk0 {
     background: #dccbf9;
     border: 1px solid #5C2D91;
-}
-
-/* fields border */
-.st-cc {
-    border-bottom-color: #754db8;
-}
-
-.st-cb {
-    border-top-color: #754db8;
-}
-
-.st-ca {
-    border-right-color: #754db8;
- 
-}
-
-.st-c9 {
-    border-left-color: #754db8;
 }
