@@ -56,6 +56,16 @@ def calculate_click_rate(
     data_submitted = round(campaign_submitted / campaign_sent * 100, 2)
     reports = round(campaign_reports / campaign_sent * 100, 2)
     downloads = round(campaign_download / campaign_sent * 100, 2)
+    if click_rate > 100:
+        click_rate = 100
+    if open_rate > 100:
+        open_rate = 100
+    if data_submitted > 100:
+        data_submitted = 100
+    if reports > 100:
+        reports = 100
+    if downloads > 100:
+        downloads = 100
     return open_rate, click_rate, data_submitted, reports, downloads
 
 # Creation of the dashboard on Streamlit
