@@ -24,7 +24,7 @@ def campaign_launch_form():
     # Campaign details section
     st.subheader("Campaign Details")
     with st.form(key="campaign_form"):
-            
+        
         campaign_name = st.text_input(
             "Campaign Name",
             key="campaign_name",
@@ -36,9 +36,10 @@ def campaign_launch_form():
             help="Optional - Add details about this campaign",
         )
         col1, col2 = st.columns(2)
+        
         with col1:
             # Fake Reason selection or input
-            reason_selection_mode = st.selectbox(
+            reason_selection_mode = st.radio(
                 "How would you like to provide the Fake Reason?",
                 options=["Choose from list", "Input manually"],
                 index=0,
@@ -53,14 +54,14 @@ def campaign_launch_form():
                     help="Required - A unique fake reason for your campaign.",
                 )
             else:
-                fake_reason = [
-                    st.text_input(
-                        "Enter Fake Reason", help="Required - PRESS ENTER FOR VALIDATION."
-                    )
-                ]
+                fake_reason_input = st.text_input(
+                    "Enter Fake Reason", help="Required - PRESS ENTER FOR VALIDATION."
+                )
+                fake_reason = [fake_reason_input] if fake_reason_input.strip() else []
+        
         with col2:
             # Fake Link selection or input
-            link_selection_mode = st.selectbox(
+            link_selection_mode = st.radio(
                 "How would you like to provide the Fake Link?",
                 options=["Choose from list", "Input manually"],
                 index=0,
@@ -75,26 +76,26 @@ def campaign_launch_form():
                     help="Required - A unique fake link for your campaign.",
                 )
             else:
-                fake_link = [
-                    st.text_input(
-                        "Enter Fake Link", help="Required - PRESS ENTER FOR VALIDATION."
-                    )
-                ]
-
+                fake_link_input = st.text_input(
+                    "Enter Fake Link", help="Required - PRESS ENTER FOR VALIDATION."
+                )
+                fake_link = [fake_link_input] if fake_link_input.strip() else []
+        
         submit_button = st.form_submit_button(label="Submit Campaign Details")
 
         if submit_button:
-            st.success("Campaign details submitted successfully!")
+            # Validation for fake reason and fake link
+            if fake_reason and fake_link:
+                st.success("Campaign details submitted successfully!")
+                # Further processing of the form data can be added here
+            else:
+                st.error(
+                    "Please provide valid inputs for both Fake Reason and Fake Link."
+                )
 
     
     st.subheader("Target Selection")
     with st.form(key="target_selection_form"):
-        # Create an empty DataFrame template
-        template_df = pd.DataFrame(columns=["First Name", "Last Name", "Email", "Proximus Business Unit", "Proximus Team", "Language"])
-
-        # Convert the DataFrame to CSV
-        csv = template_df.to_csv(index=False)
-        csv_bytes = StringIO(csv).getvalue().encode('utf-8')
 
         # Add file uploader for the target list
         uploaded_file = st.file_uploader("Upload Target List (CSV)", type="csv")
