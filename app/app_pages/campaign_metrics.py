@@ -56,10 +56,20 @@ def calculate_click_rate(
     data_submitted = round(campaign_submitted / campaign_sent * 100, 2)
     reports = round(campaign_reports / campaign_sent * 100, 2)
     downloads = round(campaign_download / campaign_sent * 100, 2)
+    if click_rate > 100:
+        click_rate = 100
+    if open_rate > 100:
+        open_rate = 100
+    if data_submitted > 100:
+        data_submitted = 100
+    if reports > 100:
+        reports = 100
+    if downloads > 100:
+        downloads = 100
     return open_rate, click_rate, data_submitted, reports, downloads
 
 # Creation of the dashboard on Streamlit
-def graphs(df):
+def graphs(df, events):
     # Time data
     df['created_at'] = pd.to_datetime(df['created_at'])
     df['month_word'] = df['created_at'].dt.strftime('%B')
@@ -155,7 +165,7 @@ def graphs(df):
             st.markdown(f"### Overview of the campaigns in {years}")
             df = df[df["year"] == years]
         
-        df_last_10 = df.tail(10)
+        df_last_10 = df.tail(20)
         fig, ax = plt.subplots(figsize=(10, 6)) 
         ax.plot(df_last_10['date'], df_last_10['open'], label="Opens", color="#5C2D91", marker='o')
         ax.plot(df_last_10['date'], df_last_10['click'], label="Clicks", color="#AD96C8", marker='o')
@@ -177,4 +187,10 @@ def graphs(df):
     short_df.sort_values(by='created_at', ascending = False, inplace = True) 
     st.dataframe(short_df.head(20))
 
-graphs(merged_df)
+    # Events dataframe
+    if on:
+        st.markdown(f"### Events overview - {selected_campaign}")
+        events_filtered = events[events["campaign_name"] == selected_campaign]
+        st.dataframe(events_filtered)
+
+graphs(merged_df, events_df)
