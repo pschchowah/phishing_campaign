@@ -95,7 +95,7 @@ To run this toolkit, ensure you have the following installed:
 
 ## **Contributors**
 
-   David Anselot
+   David Anselot  [github](https://github.com/Dadelidodu) [linkedIn](https://www.linkedin.com/in/david-a-486841214/)
 
    Thérèse de Backer
 
