@@ -88,7 +88,7 @@ To run this toolkit, ensure you have the following installed:
 
 ## **Project Timeline**
 
-20 Jan 2025 - project phase initiated at BeCode Brussels AI & Data Science Bootcamp
+13 Jan 2025 - project phase initiated at BeCode Brussels AI & Data Science Bootcamp
 
 24 Jan 2025 - project ended
 
