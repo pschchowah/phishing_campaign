@@ -103,7 +103,7 @@ To run this toolkit, ensure you have the following installed:
 
    Patrycja Schaefer  [github](https://github.com/pschchowah) [linkedIn](https://www.linkedin.com/in/patrycjaschaefer/)
   
-   Edoardo Lai
+   Edoardo Lai   [githhub](https://github.com/edoardolai) [linkedIn](https://www.linkedin.com/in/edoardo-lai/)
 
    Tumi Modiba
 
