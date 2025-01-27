@@ -23,150 +23,95 @@ def campaign_launch_form():
     
     # Campaign details section
     st.subheader("Campaign Details")
-    with st.form(key="campaign_form"):
         
-        campaign_name = st.text_input(
-            "Campaign Name",
-            key="campaign_name",
-            help="Required - A unique name for your campaign",
+    campaign_name = st.text_input(
+        "Campaign Name",
+        key="campaign_name",
+        help="Required - A unique name for your campaign",
+    )
+    campaign_description = st.text_area(
+        "Campaign Description",
+        key="campaign_description",
+        help="Optional - Add details about this campaign",
+    )
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Fake Reason selection or input
+        reason_selection_mode = st.radio(
+            "How would you like to provide the Fake Reason?",
+            options=["Choose from list", "Input manually"],
+            index=0,
+            help="Select whether to choose a reason from the list or input your own.",
         )
-        campaign_description = st.text_area(
-            "Campaign Description",
-            key="campaign_description",
-            help="Optional - Add details about this campaign",
+
+        if reason_selection_mode == "Choose from list":
+            fake_reason = st.multiselect(
+                "Fake Reason",
+                reasons,
+                default=[reasons[0]],
+                help="Required - A unique fake reason for your campaign.",
+            )
+        else:
+            fake_reason_input = st.text_input(
+                "Enter Fake Reason", help="Required - PRESS ENTER FOR VALIDATION."
+            )
+            fake_reason = [fake_reason_input] if fake_reason_input.strip() else []
+    
+    with col2:
+        # Fake Link selection or input
+        link_selection_mode = st.radio(
+            "How would you like to provide the Fake Link?",
+            options=["Choose from list", "Input manually"],
+            index=0,
+            help="Select whether to choose a link from the list or input your own.",
         )
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Fake Reason selection or input
-            reason_selection_mode = st.radio(
-                "How would you like to provide the Fake Reason?",
-                options=["Choose from list", "Input manually"],
-                index=0,
-                help="Select whether to choose a reason from the list or input your own.",
+
+        if link_selection_mode == "Choose from list":
+            fake_link = st.multiselect(
+                "Fake Link",
+                links,
+                default=[links[0]],
+                help="Required - A unique fake link for your campaign.",
             )
-
-            if reason_selection_mode == "Choose from list":
-                fake_reason = st.multiselect(
-                    "Fake Reason",
-                    reasons,
-                    default=[reasons[0]],
-                    help="Required - A unique fake reason for your campaign.",
-                )
-            else:
-                fake_reason_input = st.text_input(
-                    "Enter Fake Reason", help="Required - PRESS ENTER FOR VALIDATION."
-                )
-                fake_reason = [fake_reason_input] if fake_reason_input.strip() else []
-        
-        with col2:
-            # Fake Link selection or input
-            link_selection_mode = st.radio(
-                "How would you like to provide the Fake Link?",
-                options=["Choose from list", "Input manually"],
-                index=0,
-                help="Select whether to choose a link from the list or input your own.",
+        else:
+            fake_link_input = st.text_input(
+                "Enter Fake Link", help="Required - PRESS ENTER FOR VALIDATION."
             )
-
-            if link_selection_mode == "Choose from list":
-                fake_link = st.multiselect(
-                    "Fake Link",
-                    links,
-                    default=[links[0]],
-                    help="Required - A unique fake link for your campaign.",
-                )
-            else:
-                fake_link_input = st.text_input(
-                    "Enter Fake Link", help="Required - PRESS ENTER FOR VALIDATION."
-                )
-                fake_link = [fake_link_input] if fake_link_input.strip() else []
-        
-        submit_button = st.form_submit_button(label="Submit Campaign Details")
-
-        if submit_button:
-            # Validation for fake reason and fake link
-            if fake_reason and fake_link:
-                st.success("Campaign details submitted successfully!")
-                # Further processing of the form data can be added here
-            else:
-                st.error(
-                    "Please provide valid inputs for both Fake Reason and Fake Link."
-                )
+            fake_link = [fake_link_input] if fake_link_input.strip() else []
 
     
     st.subheader("Target Selection")
-    with st.form(key="target_selection_form"):
 
-        # Add file uploader for the target list
-        uploaded_file = st.file_uploader("Upload Target List (CSV)", type="csv")
+    # Add file uploader for the target list
+    uploaded_file = st.file_uploader("Upload Target List (CSV)", type="csv")
 
-        # Submit button for the form
-        submit_button = st.form_submit_button(label="Submit Target List")
-
-    if submit_button and uploaded_file:
+    if uploaded_file:
+        
         try:
             df = pd.read_csv(uploaded_file)
 
             # Filter Selection
             st.subheader("Filter Selection")
-            with st.form(key="filter_selection_form"):
-                filter_columns = [
-                    col for col in df.columns if col != "First Name" and col != "Last Name"
-                ]
-                for column in filter_columns:
-                    unique_values = df[column].dropna().unique()
-                    selected_values = st.multiselect(f"Filter by {column}", unique_values)
+            filter_columns = [
+                col for col in df.columns if col != "First Name" and col != "Last Name"
+            ]
+            for column in filter_columns:
+                unique_values = df[column].dropna().unique()
+                selected_values = st.multiselect(f"Filter by {column}", unique_values)
 
-                    if selected_values:
-                        if "filters" not in st.session_state:
-                            st.session_state["filters"] = {}
-                        st.session_state["filters"][column] = selected_values
+                if selected_values:
+                    if "filters" not in st.session_state:
+                        st.session_state["filters"] = {}
+                    st.session_state["filters"][column] = selected_values
 
-                # Submit button for the form
-                submit_button = st.form_submit_button(label="Apply Filters")
+            
+            # Apply filters to the dataframe
+            if "filters" in st.session_state:
+                for column, values in st.session_state["filters"].items():
+                    df = df[df[column].isin(values)]
 
-            if submit_button:
-                # Apply filters to the dataframe
-                if "filters" in st.session_state:
-                    for column, values in st.session_state["filters"].items():
-                        df = df[df[column].isin(values)]
-
-                # Display the filtered dataframe
-                st.dataframe(df)
-
-            # Manual input for new employee
-            st.subheader("Add New Employee Manually")
-            with st.form(key="manual_employee_form"):
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    first_name = st.text_input("First Name")
-                    last_name = st.text_input("Last Name")
-                    email = st.text_input("Email")
-                
-                with col2:
-                    business_unit = st.text_input("Proximus Business Unit")
-                    team_name = st.text_input("Proximus Team")
-                    language = st.text_input("Language")
-                
-                submit_button = st.form_submit_button(label="Add Employee")
-
-                if submit_button:
-                    if not first_name or not last_name or not email:
-                        st.error("Please provide all required fields (First Name, Last Name, Email)")
-                    else:
-                        employee_data = {
-                            "first_name": first_name,
-                            "last_name": last_name,
-                            "email": email,
-                            "business_unit": business_unit,
-                            "team_name": team_name,
-                            "language": language,
-                            "score": 0,
-                        }
-                        api_client.add_employee(employee_data)
-                        st.success(f"Employee {first_name} {last_name} added successfully")
-
+            
             # Launch button
             if st.button("Launch Campaign"):
                 if not campaign_name:
