@@ -90,24 +90,78 @@ def campaign_launch_form():
         try:
             df = pd.read_csv(uploaded_file)
 
+            # Form to manually add new entries
+
+            with st.form(key="add_new_entry"):
+            
+                st.subheader("Add New Target Manually")
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    first_name = st.text_input("First Name")
+                    last_name = st.text_input("Last Name")
+                    email = st.text_input("Email")
+                
+                with col2:
+                    business_unit = st.text_input("Proximus Business Unit")
+                    team_name = st.text_input("Proximus Team")
+                    language = st.text_input("Language")
+                
+                submit_button = st.form_submit_button(label='Add Entry')
+
+                if submit_button:
+                    new_entry = {
+                        "Email": email,
+                        "First Name": first_name,
+                        "Last Name": last_name,
+                        "Proximus Business Unit": business_unit,
+                        "Proximus Team": team_name,
+                        "Language": language
+                    }
+
+                    df_new = pd.DataFrame(new_entry, index=[0])
+                    st.session_state['df'] = pd.concat([df, df_new], ignore_index=True)
+
+                    st.success("New entry added successfully!")
+
             # Filter Selection
-            st.subheader("Filter Selection")
-            filter_columns = [
-                col for col in df.columns if col != "First Name" and col != "Last Name"
-            ]
-            for column in filter_columns:
-                unique_values = df[column].dropna().unique()
-                selected_values = st.multiselect(f"Filter by {column}", unique_values)
 
-                if selected_values:
-                    if "filters" not in st.session_state:
-                        st.session_state["filters"] = {}
-                    st.session_state["filters"][column] = selected_values
+            with st.form(key="filter_selection"):
+    
+                st.subheader("Filter Selection")
+                
+                filter_columns = [
+                    col for col in st.session_state['df'].columns if col != "First Name" and col != "Last Name"
+                ]
 
-            # Apply filters to the dataframe
-            if "filters" in st.session_state:
-                for column, values in st.session_state["filters"].items():
-                    df = df[df[column].isin(values)]
+                if "filters" not in st.session_state:
+                    st.session_state["filters"] = {}
+
+                for column in filter_columns:
+                    unique_values = st.session_state['df'][column].dropna().unique()
+                    selected_values = st.multiselect(
+                        f"Filter by {column}",
+                        unique_values,
+                        default=st.session_state["filters"].get(column, [])
+                    )
+
+                    if selected_values:
+                        st.session_state["filters"][column] = selected_values
+                    elif column in st.session_state["filters"]:
+                        del st.session_state["filters"][column]
+
+                # Apply filters to the dataframe
+                filtered_df = st.session_state['df']
+                if "filters" in st.session_state:
+                    for column, values in st.session_state["filters"].items():
+                        filtered_df = filtered_df[filtered_df[column].isin(values)]
+                
+                submit_button = st.form_submit_button(label='Add Entry')
+
+                if submit_button:
+
+                    st.session_state['df'] = filtered_df
+                    st.success("Filters applied successfully!")
 
             # Launch button
             if st.button("Launch Campaign"):
@@ -118,13 +172,11 @@ def campaign_launch_form():
                         with st.spinner("Creating campaign..."):
                             # First create the campaign in the database
                             if "filters" in st.session_state:
-                                for column, values in st.session_state[
-                                    "filters"
-                                ].items():
-                                    df = df[df[column].isin(values)]
+                                for column, values in st.session_state["filters"].items():
+                                    st.session_state['df'] = st.session_state['df'][st.session_state['df'][column].isin(values)]
 
                                 # Get target count
-                            target_count = len(df)
+                            target_count = len(st.session_state['df'])
                             api_client = APIClient()
                             campaign = api_client.create_campaign(
                                 name=campaign_name,
@@ -173,7 +225,7 @@ def campaign_launch_form():
                                 launch_campaign(
                                     campaign_name,
                                     campaign_description or "",
-                                    df,
+                                    st.session_state['df'],
                                     campaign["id"],
                                     fake_reason,
                                     fake_link,
