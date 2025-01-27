@@ -105,7 +105,7 @@ To run this toolkit, ensure you have the following installed:
   
    Edoardo Lai   [githhub](https://github.com/edoardolai) [linkedIn](https://www.linkedin.com/in/edoardo-lai/)
 
-   Tumi Modiba
+   Tumi Modiba [githhub](https://github.com/2moonyo)  [linkedIn](https://www.linkedin.com/in/tumi-modiba-3023b326/)
 
    Miro Fronhoffs
 
