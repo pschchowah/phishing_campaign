@@ -101,7 +101,22 @@ phishing_campaign/
 
    Miro Fronhoffs
 
-  
+## Future Improvements
+### Template Management
+- Add customizable email templates with HTML/CSS support
+- Template categorization and tagging system
+- Preview functionality for templates
+- Import/export template capabilities
+### API Enhancement
+- Implement API keys for frontend authentication
+- Separate data access per frontend instance
+### Security & Access Control
+- User authentication system with role-based access control
+- Implement the following roles:
+  - Campaign Manager (full access)
+  - Campaign Viewer (read-only access)
+  - Template Editor (template management only)
+  - Report Analyst (analytics access only)
 ##Disclaimer
 
 This tool is for educational purposes only. Misuse of this project for malicious activities is strictly prohibited.
