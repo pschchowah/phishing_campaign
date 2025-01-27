@@ -89,6 +89,8 @@ def campaign_launch_form():
 
         try:
             df = pd.read_csv(uploaded_file)
+            if 'df' not in st.session_state:
+                st.session_state['df'] = df
 
             # Form to manually add new entries
 
@@ -120,7 +122,7 @@ def campaign_launch_form():
                     }
 
                     df_new = pd.DataFrame(new_entry, index=[0])
-                    st.session_state['df'] = pd.concat([df, df_new], ignore_index=True)
+                    st.session_state['df'] = pd.concat([st.session_state['df'], df_new], ignore_index=True)
 
                     st.success("New entry added successfully!")
 
@@ -156,7 +158,7 @@ def campaign_launch_form():
                     for column, values in st.session_state["filters"].items():
                         filtered_df = filtered_df[filtered_df[column].isin(values)]
                 
-                submit_button = st.form_submit_button(label='Add Entry')
+                submit_button = st.form_submit_button(label='Apply Filters')
 
                 if submit_button:
 
@@ -164,6 +166,7 @@ def campaign_launch_form():
                     st.success("Filters applied successfully!")
 
             # Launch button
+
             if st.button("Launch Campaign"):
                 if not campaign_name:
                     st.error("Please provide a campaign name")
@@ -176,61 +179,63 @@ def campaign_launch_form():
                                     st.session_state['df'] = st.session_state['df'][st.session_state['df'][column].isin(values)]
 
                                 # Get target count
-                            target_count = len(st.session_state['df'])
-                            api_client = APIClient()
-                            campaign = api_client.create_campaign(
-                                name=campaign_name,
-                                description=campaign_description or "",
-                                target_count=target_count,
-                            )
-
-                            # Fetch the list of employees from the API
-                            employees = api_client.get_employees()
-
-                            # Extract email addresses from the JSON response
-                            employee_emails = {
-                                employee["email"] for employee in employees
-                            }
-
-                            # Initialize a counter for the number of employees added
-                            employees_added_count = 0
-
-                            for _, row in df.iterrows():
-                                if row["Email"] in employee_emails:
-                                    continue
-                                else:
-                                    employee_data = {
-                                        "first_name": row["First Name"],
-                                        "last_name": row["Last Name"],
-                                        "email": row["Email"],
-                                        "business_unit": row.get(
-                                            "Proximus Business Unit", ""
-                                        ),
-                                        "team_name": row.get("Proximus Team", ""),
-                                        "score": 0,
-                                    }
-                                    # Add new employee via API
-                                    api_client.add_employee(employee_data)
-                                    employees_added_count += 1
-
-                            # Display the number of employees added
-                            st.success(
-                                f"Count of new employees: {employees_added_count}"
-                            )
-
-                            # Then launch the emails using the service
-                            with st.spinner("Sending emails..."):
-                                # Apply Filters
-                                # Apply the filter on the DataFrame
-                                launch_campaign(
-                                    campaign_name,
-                                    campaign_description or "",
-                                    st.session_state['df'],
-                                    campaign["id"],
-                                    fake_reason,
-                                    fake_link,
+                                target_count = len(st.session_state['df'])
+                                api_client = APIClient()
+                                campaign = api_client.create_campaign(
+                                    name=campaign_name,
+                                    description=campaign_description or "",
+                                    target_count=target_count,
                                 )
 
+                                # Fetch the list of employees from the API
+                                employees = api_client.get_employees()
+
+                                # Extract email addresses from the JSON response
+                                employee_emails = {
+                                    employee["email"] for employee in employees
+                                }
+
+                                # Initialize a counter for the number of employees added
+                                employees_added_count = 0
+
+                                for _, row in st.session_state['df'].iterrows():
+                                    if row["Email"] in employee_emails:
+                                        continue
+                                    else:
+                                        employee_data = {
+                                            "first_name": row["First Name"],
+                                            "last_name": row["Last Name"],
+                                            "email": row["Email"],
+                                            "business_unit": row.get(
+                                                "Proximus Business Unit", ""
+                                            ),
+                                            "team_name": row.get("Proximus Team", ""),
+                                            "score": 0,
+                                        }
+                                        # Add new employee via API
+                                        api_client.add_employee(employee_data)
+                                        employees_added_count += 1
+
+                                # Display the number of employees added
+                                st.success(
+                                    f"Count of new employees: {employees_added_count}"
+                                )
+
+                                # Then launch the emails using the service
+                                with st.spinner("Sending emails..."):
+                                    # Apply Filters
+                                    # Apply the filter on the DataFrame
+                                    launch_campaign(
+                                        campaign_name,
+                                        campaign_description or "",
+                                        st.session_state['df'],
+                                        campaign["id"],
+                                        fake_reason,
+                                        fake_link,
+                                    )
+                            else:
+                                st.error("Please apply filters to select targets")
+                        
                         st.success(f"Campaign '{campaign_name}' launched successfully!")
                         st.info(f"Campaign targets: {target_count}")
                     except Exception as e:
