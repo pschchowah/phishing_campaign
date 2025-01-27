@@ -13,17 +13,18 @@ from services.generate import Generator
 
 
 class Emailer:
-    def __init__(self,
-                 credentials_path="credentials/gmail_credentials.json",
-                 token_path="credentials/token.json"):
+    def __init__(
+        self,
+        credentials_path="credentials/gmail_credentials.json",
+        token_path="credentials/token.json",
+    ):
         """
         Initialize the Emailer class and authenticate with Gmail API.
 
         :param credentials_path: Path to the client secrets JSON file.
         :param token_path: Path to store or read the token file for user authentication.
         """
-        self.SCOPES = [
-            "https://www.googleapis.com/auth/gmail.send"]
+        self.SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
         self.credentials_path = credentials_path
         self.token_path = token_path
         self.creds = None
@@ -51,11 +52,12 @@ class Emailer:
                 token_file.write(self.creds.to_json())
 
         # Build the Gmail API service
-        self.service = build("gmail", "v1",
-                             credentials=self.creds)
+        self.service = build("gmail", "v1", credentials=self.creds)
         return self.service
 
-    def create_message(self, sender, to, subject, message_text, message_html, campaign_id):
+    def create_message(
+        self, sender, to, subject, message_text, message_html, campaign_id
+    ):
         """
         Create a MIME message for an email with both plain-text and HTML content and a tracked attachment.
 
@@ -67,7 +69,7 @@ class Emailer:
         :param campaign_id: The campaign ID for tracking purposes.
         :return: A dictionary containing the base64-encoded email message.
         """
-        
+
         # Create a MIMEMultipart message
         message = MIMEMultipart("mixed")
         message["to"] = to
@@ -96,7 +98,9 @@ class Emailer:
 
             # Add headers for the attachment
             tracking_link = f"https://data-tracking-overview.onrender.com/events/track_downloaded?email={self.parameters['email']}&campaign_id={campaign_id}"
-            part.add_header("Content-Disposition", f'attachment; filename="{file_name}"')
+            part.add_header(
+                "Content-Disposition", f'attachment; filename="{file_name}"'
+            )
             part.add_header("Content-ID", "<attachment_pdf>")
             part.add_header("X-Tracking-Link", tracking_link)
 
@@ -131,8 +135,7 @@ class Emailer:
                 .send(userId="me", body=message)
                 .execute()
             )
-            print(
-                f"Message sent! Message ID: {sent_message['id']}")
+            print(f"Message sent! Message ID: {sent_message['id']}")
             return sent_message
         except HttpError as error:
             print(f"An error occurred: {error}")

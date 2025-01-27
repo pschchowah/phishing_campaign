@@ -40,7 +40,7 @@ def launch_campaign(
             "email": row["Email"],
             "business_unit": row.get("Proximus Business Unit", ""),
             "team_name": row.get("Proximus Team", ""),
-            "language": row["Language"]
+            "language": row["Language"],
         }
         email.parameters = generator.parameters
 
@@ -55,7 +55,9 @@ def launch_campaign(
 
         sender = "me"
         recipient = row["Email"]
-        message = email.create_message(sender, recipient, subject, body, body_html, campaign_id)
+        message = email.create_message(
+            sender, recipient, subject, body, body_html, campaign_id
+        )
         email.send_message(message)
 
     return {"status": "success", "campaign_id": campaign_id}

@@ -20,10 +20,10 @@ def campaign_launch_form():
     # Extract reasons and links from patterns
     reasons = [pattern["Reason"] for pattern in gen.patterns]
     links = [pattern["Fake Link"] for pattern in gen.patterns]
-    
+
     # Campaign details section
     st.subheader("Campaign Details")
-        
+
     campaign_name = st.text_input(
         "Campaign Name",
         key="campaign_name",
@@ -35,7 +35,7 @@ def campaign_launch_form():
         help="Optional - Add details about this campaign",
     )
     col1, col2 = st.columns(2)
-    
+
     with col1:
         # Fake Reason selection or input
         reason_selection_mode = st.radio(
@@ -57,7 +57,7 @@ def campaign_launch_form():
                 "Enter Fake Reason", help="Required - PRESS ENTER FOR VALIDATION."
             )
             fake_reason = [fake_reason_input] if fake_reason_input.strip() else []
-    
+
     with col2:
         # Fake Link selection or input
         link_selection_mode = st.radio(
@@ -80,14 +80,13 @@ def campaign_launch_form():
             )
             fake_link = [fake_link_input] if fake_link_input.strip() else []
 
-    
     st.subheader("Target Selection")
 
     # Add file uploader for the target list
     uploaded_file = st.file_uploader("Upload Target List (CSV)", type="csv")
 
     if uploaded_file:
-        
+
         try:
             df = pd.read_csv(uploaded_file)
 
@@ -105,13 +104,11 @@ def campaign_launch_form():
                         st.session_state["filters"] = {}
                     st.session_state["filters"][column] = selected_values
 
-            
             # Apply filters to the dataframe
             if "filters" in st.session_state:
                 for column, values in st.session_state["filters"].items():
                     df = df[df[column].isin(values)]
 
-            
             # Launch button
             if st.button("Launch Campaign"):
                 if not campaign_name:

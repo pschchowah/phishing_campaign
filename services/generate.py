@@ -5,10 +5,14 @@ import os
 
 
 class Generator:
+    """
+    Initialize the Generator class.
+    """
+
     def __init__(
         self,
         model=None,
-        csv_file="data/dummy-emails - language test.csv",
+        csv_file="data/template.csv",
         base_url="https://data-tracking-overview.onrender.com",
     ):
         # Default parameters for the receiver
@@ -18,7 +22,7 @@ class Generator:
             "email": "john.doe@example.com",
             "business_unit": "Business Solutions",
             "team_name": "Operations Team",
-            "language": "French"
+            "language": "French",
         }
 
         # Default phishing patterns
@@ -83,7 +87,9 @@ class Generator:
             ):
                 return sender_first_name, sender_last_name
 
-    def define_body_prompt(self, campaign_id, reason, link, sender_first_name, sender_last_name):
+    def define_body_prompt(
+        self, campaign_id, reason, link, sender_first_name, sender_last_name
+    ):
         """Generates the email body prompt, including dynamic content."""
         future_date, random_time = self.random_date_and_time()
         click_tracking_url = f"{self.base_url}/events/track_click?email={self.parameters['email']}&campaign_id={campaign_id}"
@@ -94,7 +100,7 @@ class Generator:
             f"from the {self.parameters['team_name']} team. The email should address the following topic: {reason}."
             f"The email should include the following elements:"
             f"1. A clear explanation of why {reason} is critical, with specific consequences if no action is taken."
-            f"2. A specific call to action requiring the recipient to click this link: <a href=\"{click_tracking_url}\">{link}</a>"
+            f'2. A specific call to action requiring the recipient to click this link: <a href="{click_tracking_url}">{link}</a>'
             f"3. Include a deadline with a {future_date} and {random_time} in the near-future, excluding weekends."
             f"4. Ensure the tone is professional and not overly alarming to avoid suspicion."
             f"Remember to:"
@@ -104,8 +110,6 @@ class Generator:
             f"- Format the result as an HTML body text with only <p> tags to subdivise in paragraphs."
             f"- Format the date and time between <strong> tags to highlight it."
             f"- Only write the body of the email. Do not include headers or signatures."
-
-
         )
 
         return self.prompt
@@ -114,13 +118,15 @@ class Generator:
         """Generates the body of the phishing email with tracking links and pixel."""
         if not isinstance(campaign_id, int):
             raise ValueError("campaign_id must be an integer")
-        
+
         sender_first_name, sender_last_name = self.random_sender()
-        body_prompt = self.define_body_prompt(campaign_id, reason, link, sender_first_name, sender_last_name)
+        body_prompt = self.define_body_prompt(
+            campaign_id, reason, link, sender_first_name, sender_last_name
+        )
         body = self.generate_text(body_prompt)
 
         # Create tracking pixel URL
-        
+
         tracking_pixel_url = f"{self.base_url}/events/track_open?email={self.parameters['email']}&campaign_id={campaign_id}"
 
         # Create HTML body with a simple tracking pixel image
@@ -161,7 +167,7 @@ class Generator:
         """
 
         return body_html, body
-    
+
     def generate_text(self, prompt):
         """Generates content based on the provided prompt using the model."""
         if not self.model:
