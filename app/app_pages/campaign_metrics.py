@@ -5,36 +5,55 @@ import sys
 import datetime
 from pathlib import Path
 
+# Add the parent directory to the python path to import custom modules
 root_dir = Path(__file__).parent.parent
 sys.path.append(str(root_dir))
 from api_client import APIClient
 
-# Event dataframe
-def dataframe_creation():
-    # Fetch data from external endpoint
+def dataframe_creation() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Fetches events and campaigns data from an external API and creates corresponding DataFrames.
+    Returns:
+        tuple[pd.DataFrame, pd.DataFrame]: Two DataFrames - events and campaigns data.
+    """
     api_client = APIClient()
     tracking_data_events = api_client.get_events()
     tracking_data_campaigns = api_client.get_campaigns()
     return pd.DataFrame(tracking_data_events), pd.DataFrame(tracking_data_campaigns)
 
+# Initialize dataFrames
 events_df, campaigns_df = dataframe_creation()
 
-def create_final_dataframe(events_df,campaigns_df):
+def create_final_dataframe(events_df: pd.DataFrame, campaigns_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Combines events and campaigns data to create a final merged dataFrame with event counts.
+    :params:
+        events_df: dataFrame containing event data.
+        campaigns_df: dataFrame containing campaign data.
+    Returns:
+        pd.DataFrame: merged dataFrame with event counts per campaign.
+    """
     all_event_types = ["open", "click", "submitted", "downloaded_attachement","reported"]
     event_counts = events_df.groupby(["campaign_id", "event_type"]).size().unstack(fill_value=0)
+    # Ensure all event types are represented
     for event in all_event_types:
         if event not in event_counts.columns:
             event_counts[event] = 0
- 
-    # Create final dataFrame
+    # Merge campaigns with event counts
     df = pd.merge(campaigns_df, event_counts, left_on="id", right_on="campaign_id", how="left")
-    df = df.fillna(0)
+    df = df.fillna(0) # Fill missing values with 0
     return df
 
+# Create the merged DataFrame
 merged_df = create_final_dataframe(events_df, campaigns_df)
 
 # Pie charts
-def pie_chart(data):
+def pie_chart(data: float) -> None:
+    """
+    Displays a pie chart of a given percentage using Streamlit and Matplotlib.
+    :params:
+        data: percentage value to display in the pie chart.
+    """
     st.markdown(f"### {data}%")
     percentage = [data, 100 - data]
     colors = ["#7d57a7", "#e6e6e7"]
@@ -47,15 +66,29 @@ def pie_chart(data):
     st.pyplot(fig, use_container_width=True)
     plt.clf()
 
-# Percentage calculations
 def calculate_click_rate(
-    campaign_clicks, campaign_opens, campaign_sent, campaign_submitted, campaign_reports, campaign_download
-):
+    campaign_clicks: int, campaign_opens: int, campaign_sent: int, 
+    campaign_submitted: int, campaign_reports: int, campaign_download: int
+) -> tuple[float, float, float, float, float]:
+    """
+    Calculates various campaign metrics as percentages.
+    :params:
+        campaign_clicks: Number of clicks.
+        campaign_opens: Number of opens.
+        campaign_sent: Total emails sent.
+        campaign_submitted: Number of submissions.
+        campaign_reports: Number of reports.
+        campaign_download: Number of downloads.
+    Returns:
+        tuple[float, float, float, float, float]: Open rate, click rate, data submitted rate, 
+                                                  report rate, and download rate.
+    """
     click_rate = round(campaign_clicks / campaign_sent * 100, 2)
     open_rate = round(campaign_opens / campaign_sent * 100, 2)
     data_submitted = round(campaign_submitted / campaign_sent * 100, 2)
     reports = round(campaign_reports / campaign_sent * 100, 2)
     downloads = round(campaign_download / campaign_sent * 100, 2)
+    # Ensure rates do not exceed 100%
     if click_rate > 100:
         click_rate = 100
     if open_rate > 100:
@@ -68,9 +101,14 @@ def calculate_click_rate(
         downloads = 100
     return open_rate, click_rate, data_submitted, reports, downloads
 
-# Creation of the dashboard on Streamlit
-def graphs(df, events):
-    # Time data
+def graphs(df: pd.DataFrame, events: pd.DataFrame) -> None:
+    """
+    Generates a Streamlit dashboard with graphs and metrics based on the campaign data.
+    :params:
+        df: Campaigns DataFrame with aggregated metrics.
+        events: Events DataFrame for detailed event data.
+    """
+    # Process time data
     df['created_at'] = pd.to_datetime(df['created_at'])
     df['month_word'] = df['created_at'].dt.strftime('%B')
     df['year'] = df['created_at'].dt.year
@@ -78,12 +116,14 @@ def graphs(df, events):
     df['month'] = df['created_at'].dt.month
     df['date'] = pd.to_datetime(df[['day', 'month', 'year']])
 
-    # Sidebar
+    # Sidebar for filters
     with st.sidebar:
         st.title("Phishing Email Dashboard")
         on = st.toggle("Per campaign", value=False)
         unique_years = df["year"].unique()
         years = st.segmented_control("Which year", options=unique_years)
+        
+        # Filter data based on year and month
         if years == None:
             df = df
         else:
@@ -94,13 +134,14 @@ def graphs(df, events):
                 df = df
             else:
                 df = df[df["month_word"].isin(selected_month)]
+
+        # Filter data based on year and month
         if on:
             unique_campaign = df["name"].unique()
             selected_campaign = st.selectbox("Select a campaign", unique_campaign)
-            df = df[df["name"] == selected_campaign]
-            
+            df = df[df["name"] == selected_campaign]      
 
-    # Campaigns data
+    # Calculate metrics
     emails_sent = df['target_count'].sum()
     emails_open = df['open'].sum()
     emails_click = df['click'].sum()
@@ -119,7 +160,7 @@ def graphs(df, events):
     else:
         st.title("General overview")
 
-    # Pie charts
+    # Display pie charts for metrics
     col1,col2,col3,col4 = st.columns(4)
 
     with col1:
@@ -138,9 +179,13 @@ def graphs(df, events):
         st.markdown("#### Downloads")
         pie_chart(emails_download)
     
-    # Bar charts
+    # Display bar charts for the campaign view
     if on:
-        def addlabels(values):
+        def addlabels(values: list[float]) -> None:
+            ''' 
+            Place a text label above each bar with its value
+            Adjust the height of the label slightly above the bar using 0.01 * max(values)
+            '''
             for i, value in enumerate(values):
                 plt.text(i, value + 0.01*max(values), str(value), ha='center', fontsize=8)  # Adjust 0.05 to change the distance
 
@@ -153,8 +198,9 @@ def graphs(df, events):
         plt.xticks(rotation=45)
         ax.set_ylabel("How many people", fontsize=10)
         addlabels(values)
-
         st.pyplot(fig)
+    
+    # Display histogram for the general view
     else:
         if years == None:
             st.markdown("### Overview of the lasts campaigns")
@@ -166,10 +212,8 @@ def graphs(df, events):
             df = df[df["year"] == years]
         
         df_last_10 = df.tail(10)
-
         x_labels = df_last_10['created_at']  
         x_index = range(len(df_last_10)) 
-
         fig, ax = plt.subplots(figsize=(10, 4)) 
         ax.plot(x_index, df_last_10['open'], label="Opens", color="#5C2D91", marker='o')
         ax.plot(x_index, df_last_10['click'], label="Clicks", color="#AD96C8", marker='o')
