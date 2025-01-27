@@ -5,23 +5,15 @@
 [Introduction](#Introduction)     |     [Description](#Description)       |       [Usage](#Usage)    |     [Timeline](#Timeline)       |       [List of Improvements](#list-of-improvements)    |    [Contributors](#contributors)
 
 ## **Introduction**
-1. Data cleaning
-2. Features engineering
-3. Data formatting
-4. Model preselected - XGBoost
-5. Applying the model
-6. Model evaluation
+???
 
 ## **Description**
 
 Packages used:
 - pandas
 - numpy
-- xgboost
 - matplotlib
-- seaborn
-- sklearn
-- shap
+- ???
 
 
 ## **Usage**
