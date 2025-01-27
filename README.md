@@ -1,8 +1,21 @@
 # **phishing_campaign**
 
-![Phish & Clicks.]([https://www.shutterstock.com/image-vector/seamless-border-cute-retro-houses-600nw-1111423082.jpg](https://discord.com/channels/708408549704990732/1289222632973013095/1331993762825502771))
+![Phish & Clicks.]([https://www.shutterstock.com/image-vector/seamless-border-cute-retro-houses-600nw-1111423082.jpg])
 
 [Introduction](#Introduction)     |     [Description](#Description)       |       [Usage](#Usage)    |     [Timeline](#Timeline)       |       [List of Improvements](#list-of-improvements)    |    [Contributors](#contributors)
+
+## **Introduction**
+
+Overview
+
+The Phishing Campaign Simulator is a project designed to simulate and analyze phishing campaigns for educational and research purposes. This tool can help individuals and organizations understand how phishing attempts work and identify ways to mitigate risks. It also provides insights into phishing techniques and their effectiveness in compromising targets.
+
+Features
+
+Simulation of Phishing Campaigns: Generate custom phishing scenarios to test user behavior.
+Dataset Integration: Use real-world datasets to analyze trends in phishing campaigns.
+Data Analysis Tools: Leverage Python libraries like pandas, numpy, and matplotlib to analyze results.
+Customization Options: Create tailored phishing emails and schedules for testing purposes.
 
 ## **Features**
 
@@ -104,4 +117,28 @@ To run this toolkit, ensure you have the following installed:
 
   Tumi Modiba
 
-  Miro Fronhoffs
+   Miro Fronhoffs
+
+## Future Improvements
+
+### Template Management
+- Add customizable email templates with HTML/CSS support
+- Template categorization and tagging system
+- Preview functionality for templates
+- Import/export template capabilities
+### API Enhancement
+- Implement API keys for frontend authentication
+- Separate data access per frontend instance
+### Security & Access Control
+- User authentication system with role-based access control
+- Implement the following roles:
+  - Campaign Manager (full access)
+  - Campaign Viewer (read-only access)
+  - Template Editor (template management only)
+  - Report Analyst (analytics access only)
+
+## Disclaimer
+
+This tool is for educational purposes only. Misuse of this project for malicious activities is strictly prohibited.
+
+ 
