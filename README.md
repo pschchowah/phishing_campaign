@@ -97,7 +97,7 @@ To run this toolkit, ensure you have the following installed:
 
    David Anselot  [github](https://github.com/Dadelidodu) [linkedIn](https://www.linkedin.com/in/david-a-486841214/)
 
-   Thérèse de Backer
+   Thérèse de Backer [github](https://github.com/therese-debacker) <a href="https://www.linkedin.com/in/th%C3%A9r%C3%A8se-de-backer-8963735a/">LinkedIn</a>
 
    Nicole Pretorius [github](https://github.com/npret) [linkedIn](https://www.linkedin.com/in/nicolepret/)
 
