@@ -6,14 +6,16 @@ class APIClient:
     def __init__(self, base_url: str = "https://data-tracking-overview.onrender.com"):
         self.base_url = base_url
 
-    def get_events(self, campaign_id: Optional[int] = None,employee_id: Optional[int] = None) -> List[Dict]:
+    def get_events(
+        self, campaign_id: Optional[int] = None, employee_id: Optional[int] = None
+    ) -> List[Dict]:
         """Get events, optionally filtered by campaign"""
         try:
             params = {}
             if campaign_id:
                 params["campaign_id"] = campaign_id
-            #if employee_id:
-                #params["employee_id"] = employee_id
+            # if employee_id:
+            # params["employee_id"] = employee_id
             response = requests.get(f"{self.base_url}/events", params=params)
             response.raise_for_status()
             return response.json()
