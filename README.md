@@ -5,19 +5,43 @@
 [Introduction](#Introduction)     |     [Description](#Description)       |       [Usage](#Usage)    |     [Timeline](#Timeline)       |       [List of Improvements](#list-of-improvements)    |    [Contributors](#contributors)
 
 ## **Introduction**
-???
+Phish & Clicks is a web-based application built with FastAPI and Streamlit that enables security teams to:
+- Launch targeted phishing simulation campaigns
+- Track employee interactions with phishing emails
+- Analyze campaign effectiveness through detailed metrics
+- Provide instant security awareness training
 
 ## **Description**
 
 Packages used:
-- pandas
-- numpy
-- matplotlib
-- ???
+- `fastapi`: Backend API framework
+- `streamlit`: Frontend dashboard interface
+- `sqlalchemy`: Database ORM
+- `pandas`: Data manipulation and analysis
+- `numpy` : ???
+- `matplotlib`: Data visualization
+- `pydantic`: Data validation
+- `jinja2`: HTML template rendering
+- `psycopg2`: PostgreSQL adapter
 
 
 ## **Usage**
-??? Everything runs from main.py, the 3 data sets are needed for the program to work.
+1. Install dependencies
+   pip install -r requirements.txt
+
+2. Start the Streamlit dashboard
+   streamlit run app/app.py
+
+3. Login with credentials
+   from secrets.toml
+
+4. Create Campaign
+  - Navigate to "Campaign Launch"
+  - Enter campaign details
+  - Upload target CSV file (required columns: First Name, Last Name, Email)
+  - Select phishing template options
+  - Launch campaign 
+
 
 ## **Timeline**
 20 Jan 2025 - project phase initiated at BeCode Brussels AI & Data Science Bootcamp
@@ -27,8 +51,10 @@ Packages used:
 
 ## **List of Improvements**
 - Scoring System
-- Scheduling
-- ???
+- Email scheduling system
+- Add more phishing templates
+- Add ability to input employee data from an external database
+- Add user security permissions for accessibility to application
 
 ## **Contributors**
 - Data Analysts:
