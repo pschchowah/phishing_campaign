@@ -99,7 +99,7 @@ To run this toolkit, ensure you have the following installed:
 
    Thérèse de Backer
 
-   Nicole Pretorius
+   Nicole Pretorius [github](https://github.com/npret) [linkedIn](https://www.linkedin.com/in/nicolepret/)
 
    Patrycja Schaefer  [github](https://github.com/pschchowah) [linkedIn](https://www.linkedin.com/in/patrycjaschaefer/)
   
