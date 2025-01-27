@@ -9,10 +9,10 @@
 
 Phish & Clicks is a web-based application built with FastAPI 
 and Streamlit that enables security teams to:
-Launch targeted phishing simulation campaigns
-Track employee interactions with phishing emails
-Analyze campaign effectiveness through detailed metrics
-Provide instant security awareness training
+- Launch targeted phishing simulation campaigns
+- Track employee interactions with phishing emails
+- Analyze campaign effectiveness through detailed metrics
+- Provide instant security awareness training
 
 ## **Features**
 
@@ -74,19 +74,19 @@ To run this toolkit, ensure you have the following installed:
 
 1. Run this command on local for testing : *streamlit run app/app.py*
 
-2. login with the secrets.toml username and password you just defined
+2. Log in with the secrets.toml username and password you just defined
 
 3. Campaign Launch :
 
     - Campaign Name is mandatory
-    - use dataset template provided in 'data' folder for upload
+    - Use the dataset template provided in the 'data' folder for upload
 
 4. Navigate through pages for Overview : 
     
     - Data Overview
     - Campaign Metrics
 
-## **Timeline**
+## **Project Timeline**
 
 20 Jan 2025 - project phase initiated at BeCode Brussels AI & Data Science Bootcamp
 
@@ -101,7 +101,7 @@ To run this toolkit, ensure you have the following installed:
 
    Nicole Pretorius
 
-   Patrycja Schaefer
+   Patrycja Schaefer  [github](https://github.com/pschchowah) [linkedIn](https://www.linkedin.com/in/patrycjaschaefer/)
   
    Edoardo Lai
 
@@ -111,7 +111,12 @@ To run this toolkit, ensure you have the following installed:
 
 
 ## **Future Improvements**
-
+### General
+- Scoring System
+- Email scheduling system
+- Add more phishing templates
+- Add ability to input employee data from an external database
+- Add user security permissions for accessibility to application
 ### Template Management
 - Add customizable email templates with HTML/CSS support
 - Template categorization and tagging system
@@ -119,7 +124,7 @@ To run this toolkit, ensure you have the following installed:
 - Import/export template capabilities
 ### API Enhancement
 - Implement API keys for frontend authentication
-- Separate data access per frontend instance
+- Separate data access per front-end instance
 ### Security & Access Control
 - User authentication system with role-based access control
 - Implement the following roles:
