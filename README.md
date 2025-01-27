@@ -1,21 +1,18 @@
-# **phishing_campaign**
+# **Phishing Simulation Platform**
 
-![Phish & Clicks.]([https://www.shutterstock.com/image-vector/seamless-border-cute-retro-houses-600nw-1111423082.jpg])
+[![phish-n-clicks-logo-hori-purple.png](https://i.postimg.cc/dQSDc9yr/phish-n-clicks-logo-hori-purple.png)](https://postimg.cc/yWc7Fcn8)
 
-[Introduction](#Introduction)     |     [Description](#Description)       |       [Usage](#Usage)    |     [Timeline](#Timeline)       |       [List of Improvements](#list-of-improvements)    |    [Contributors](#contributors)
+
+[Introduction](#Introduction)     | [Features](#Features)     | [Requirements](#Requirements)     |     [Installation](#Installation)       |       [Usage](#Usage)    |     [Timeline](#Timeline)         |    [Contributors](#contributors)     |       [Future Improvements](#future-improvements)    |      [Dislaimer](#disclaimer)
 
 ## **Introduction**
 
-Overview
-
-The Phishing Campaign Simulator is a project designed to simulate and analyze phishing campaigns for educational and research purposes. This tool can help individuals and organizations understand how phishing attempts work and identify ways to mitigate risks. It also provides insights into phishing techniques and their effectiveness in compromising targets.
-
-Features
-
-Simulation of Phishing Campaigns: Generate custom phishing scenarios to test user behavior.
-Dataset Integration: Use real-world datasets to analyze trends in phishing campaigns.
-Data Analysis Tools: Leverage Python libraries like pandas, numpy, and matplotlib to analyze results.
-Customization Options: Create tailored phishing emails and schedules for testing purposes.
+Phish & Clicks is a web-based application built with FastAPI 
+and Streamlit that enables security teams to:
+Launch targeted phishing simulation campaigns
+Track employee interactions with phishing emails
+Analyze campaign effectiveness through detailed metrics
+Provide instant security awareness training
 
 ## **Features**
 
@@ -96,30 +93,24 @@ To run this toolkit, ensure you have the following installed:
 24 Jan 2025 - project ended
 
 
-## **List of Improvements**
-
-- Scoring System
-- Scheduling
-- Database linking for new targets input
-
-
 ## **Contributors**
 
-  David Anselot
+   David Anselot
 
-  Thérèse de Backer
+   Thérèse de Backer
 
-  Nicole Pretorius
+   Nicole Pretorius
 
-  Patrycja Schaefer
+   Patrycja Schaefer
   
-  Edoardo Lai
+   Edoardo Lai
 
-  Tumi Modiba
+   Tumi Modiba
 
    Miro Fronhoffs
 
-## Future Improvements
+
+## **Future Improvements**
 
 ### Template Management
 - Add customizable email templates with HTML/CSS support
