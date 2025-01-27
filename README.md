@@ -3,7 +3,7 @@
 [![phish-n-clicks-logo-hori-purple.png](https://i.postimg.cc/dQSDc9yr/phish-n-clicks-logo-hori-purple.png)](https://postimg.cc/yWc7Fcn8)
 
 
-[Introduction](#Introduction)     | [Features](#Features)     | [Requirements](#Requirements)     |     [Installation](#Installation)       |       [Usage](#Usage)    |     [Timeline](#Timeline)         |    [Contributors](#contributors)     |       [Future Improvements](#future-improvements)    |      [Disclaimer](#disclaimer)
+[Introduction](#Introduction)     | [Features](#Features)     | [Requirements](#Requirements)     |     [Installation](#Installation)       |       [Usage](#Usage)    |     [Project Timeline](#project-timeline)         |    [Contributors](#contributors)     |       [Future Improvements](#future-improvements)    |      [Disclaimer](#disclaimer)
 
 ## **Introduction**
 
