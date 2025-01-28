@@ -95,19 +95,19 @@ To run this toolkit, ensure you have the following installed:
 
 ## **Contributors**
 
-   David Anselot  [github](https://github.com/Dadelidodu) [linkedIn](https://www.linkedin.com/in/david-a-486841214/)
+   David Anselot  [github](https://github.com/Dadelidodu) [LinkedIn](https://www.linkedin.com/in/david-a-486841214/)
 
    Thérèse de Backer [github](https://github.com/therese-debacker) <a href="https://www.linkedin.com/in/th%C3%A9r%C3%A8se-de-backer-8963735a/">LinkedIn</a>
 
-   Nicole Pretorius [github](https://github.com/npret) [linkedIn](https://www.linkedin.com/in/nicolepret/)
+   Nicole Pretorius [github](https://github.com/npret) [LinkedIn](https://www.linkedin.com/in/nicolepret/)
 
-   Patrycja Schaefer  [github](https://github.com/pschchowah) [linkedIn](https://www.linkedin.com/in/patrycjaschaefer/)
+   Patrycja Schaefer  [github](https://github.com/pschchowah) [LinkedIn](https://www.linkedin.com/in/patrycjaschaefer/)
   
-   Edoardo Lai   [githhub](https://github.com/edoardolai) [linkedIn](https://www.linkedin.com/in/edoardo-lai/)
+   Edoardo Lai   [github](https://github.com/edoardolai) [LinkedIn](https://www.linkedin.com/in/edoardo-lai/)
 
-   Tumi Modiba [githhub](https://github.com/2moonyo)  [linkedIn](https://www.linkedin.com/in/tumi-modiba-3023b326/)
+   Tumi Modiba [github](https://github.com/2moonyo)  [LinkedIn](https://www.linkedin.com/in/tumi-modiba-3023b326/)
 
-   Miro Fronhoffs [githhub](https://github.com/MiroFronhoffs) [linkedIn](www.linkedin.com/in/miro-fronhoffs-263661219)
+   Miro Fronhoffs [github](https://github.com/MiroFronhoffs) [LinkedIn](www.linkedin.com/in/miro-fronhoffs-263661219)
 
 
 ## **Future Improvements**
