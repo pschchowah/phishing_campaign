@@ -107,7 +107,7 @@ To run this toolkit, ensure you have the following installed:
 
    Tumi Modiba [githhub](https://github.com/2moonyo)  [linkedIn](https://www.linkedin.com/in/tumi-modiba-3023b326/)
 
-   Miro Fronhoffs
+   Miro Fronhoffs [githhub](https://github.com/MiroFronhoffs) [linkedIn](www.linkedin.com/in/miro-fronhoffs-263661219)
 
 
 ## **Future Improvements**
